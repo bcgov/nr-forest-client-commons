@@ -1,0 +1,24 @@
+github_actions:
+  - .github/*
+
+tests:
+  - core/src/test/**/*.java
+  - spring/src/test/**/*.java
+
+source:
+  - core/src/main/**/*.java
+  - spring/src/main/**/*.java
+
+dependencies:
+  - any: ['core/pom.xml','spring/package.json']
+
+documentation:
+  - core/docs/**/*
+  - spring/docs/**/*
+  - docs/**/*
+
+core:
+  - core/**/*
+
+spring:
+  - spring/**/*
