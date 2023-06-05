@@ -51,7 +51,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=bcgov_nr-forest-client-commons
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-          
+
       - name: Archive CycloneDX
         continue-on-error: true
         uses: actions/upload-artifact@v3
