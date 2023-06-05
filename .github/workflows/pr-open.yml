@@ -70,13 +70,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Removing old packages
-        uses: jackhowa/delete-github-package-versions@v0.4.9
+        uses: smartsquaregmbh/delete-old-packages@v0.7.0
         continue-on-error: true
         with:          
-          version: "${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}"
-          versions: "${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}"
+          version-pattern: "^\\d+\\.\\d+\\.\\d+\\.PR${{ github.event.number }}d+$"          
           token: ${{ github.token }}
-          names: ca.bc.gov.nrs-commons.forest-client-core
+          names: |
+            ca.bc.gov.nrs-commons.forest-client-core
     
   pr-greeting:
     name: PR Greeting
