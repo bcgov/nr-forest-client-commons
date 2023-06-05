@@ -120,11 +120,11 @@ jobs:
       - name: Run Tests
         run: |
           cd core
-          ./mvnw -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
 
       - name: Publish Core
         run: |
           cd core
-          ./mvnw -B deploy -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
+          mvn -B deploy -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
