@@ -99,3 +99,32 @@ jobs:
             
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  build-core:
+    name: Build Core
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: 'github'
+          settings-path: ${{ github.workspace }}
+
+      - name: Run Tests
+        run: |
+          cd core
+          ./mvnw -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+
+      - name: Publish Core
+        run: |
+          cd core
+          ./mvnw -B deploy -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
