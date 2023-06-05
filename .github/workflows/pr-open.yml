@@ -101,7 +101,7 @@ jobs:
             </dependency>
             ```
             
-            Once merged, code will be promoted and handed off to following workflow run.
+            Once merged, the code will be promoted and handed off to the following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   build-core:
@@ -165,7 +165,7 @@ jobs:
 
       - name: Update core dependency
         run: | 
-          mvn versions:use-dep-version -DdepVersion=0.0.2 -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Run Tests
         run: |
