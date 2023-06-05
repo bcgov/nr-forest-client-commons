@@ -15,6 +15,8 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    outputs:
+      version: ${{ steps.changelog.outputs.version }}
     steps:
       - uses: actions/checkout@v3
 
@@ -50,9 +52,6 @@ jobs:
           git-branch: refs/heads/${{ github.head_ref }}
           skip-on-empty: "false"
 
-      - name: Test
-        run: echo new version ${{ steps.changelog.outputs.version }}
-
       - name: Checkout pr
         uses: actions/checkout@v3
         with:
@@ -73,6 +72,7 @@ jobs:
   pr-greeting:
     name: PR Greeting
     runs-on: ubuntu-22.04
+    needs: pr-validation    
     permissions:
       pull-requests: write
     steps:
@@ -89,7 +89,7 @@ jobs:
             <dependency>
               <groupId>ca.bc.gov.nrs-commons</groupId>
               <artifactId>forest-client-core</artifactId>
-              <version>dev-${{ github.ref }}</version>
+              <version>${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}</version>
             </dependency>
             ```
             
@@ -97,7 +97,7 @@ jobs:
             <dependency>
               <groupId>ca.bc.gov.nrs-commons</groupId>
               <artifactId>forest-client-spring</artifactId>
-              <version>dev-${{ github.ref }}</version>
+              <version>${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}</version>
             </dependency>
             ```
             
@@ -107,6 +107,7 @@ jobs:
   build-core:
     name: Build Core
     runs-on: ubuntu-22.04
+    needs: pr-validation
     permissions:
       packages: write
     steps:
@@ -124,18 +125,30 @@ jobs:
       - name: Run Tests
         run: |
           cd core
-          mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Removing previous version
+        uses: actions/delete-package-versions@v4
+        continue-on-error: true
+        with:
+          package-version-ids: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          package-name: ca.bc.gov.nrs-commons.forest-client-core
+          package-type: maven
+          token: ${{ github.token }}
 
       - name: Publish Core
         run: |
           cd core
-          mvn -B deploy -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:commit
+          mvn -B deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
   build-spring:
     name: Build Spring
     runs-on: ubuntu-22.04
+    needs: build-core
     permissions:
       packages: write
     steps:
@@ -152,16 +165,27 @@ jobs:
 
       - name: Update core dependency
         run: | 
-          mvn versions:use-dep-version -DdepVersion=0.0.2 -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true
+          mvn versions:use-dep-version -DdepVersion=0.0.2 -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
 
       - name: Run Tests
         run: |
           cd spring
-          mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Removing previous version
+        uses: actions/delete-package-versions@v4
+        continue-on-error: true
+        with:
+          package-version-ids: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          package-name: ca.bc.gov.nrs-commons.forest-client-spring
+          package-type: maven
+          token: ${{ github.token }}
 
       - name: Publish Spring
         run: |
           cd spring
-          mvn -B deploy -s $GITHUB_WORKSPACE/settings.xml --file pom.xml
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:commit --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
