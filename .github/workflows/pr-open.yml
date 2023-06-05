@@ -108,8 +108,6 @@ jobs:
         uses: jackhowa/delete-github-package-versions@v0.4.9
         continue-on-error: true
         with:
-          user: bcgov
-          repo: nr-forest-client-commons
           version: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
           token: ${{ github.token }}
           names: |
