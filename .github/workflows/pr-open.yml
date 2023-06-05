@@ -104,6 +104,18 @@ jobs:
             Once merged, the code will be promoted and handed off to the following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
+      - name: Removing old packages
+        uses: jackhowa/delete-github-package-versions@v0.4.9
+        continue-on-error: true
+        with:
+          organization: bcgov
+          repo: nr-forest-client-commons
+          version: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          token: ${{ github.token }}
+          names: |
+            ca.bc.gov.nrs-commons.forest-client-core
+            ca.bc.gov.nrs-commons.forest-client-spring
+
   build-core:
     name: Build Core
     runs-on: ubuntu-22.04
@@ -126,16 +138,7 @@ jobs:
         run: |
           cd core
           mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-
-      - name: Removing previous version
-        uses: actions/delete-package-versions@v4
-        continue-on-error: true
-        with:
-          package-version-ids: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
-          package-name: ca.bc.gov.nrs-commons.forest-client-core
-          package-type: maven
-          token: ${{ github.token }}
-
+     
       - name: Publish Core
         run: |
           cd core
@@ -171,15 +174,6 @@ jobs:
         run: |
           cd spring
           mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-
-      - name: Removing previous version
-        uses: actions/delete-package-versions@v4
-        continue-on-error: true
-        with:
-          package-version-ids: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
-          package-name: ca.bc.gov.nrs-commons.forest-client-spring
-          package-type: maven
-          token: ${{ github.token }}
 
       - name: Publish Spring
         run: |
