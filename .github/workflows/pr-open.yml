@@ -119,7 +119,9 @@ jobs:
   build-core:
     name: Build Core
     runs-on: ubuntu-22.04
-    needs: pr-validation
+    needs: 
+      - pr-validation
+      - pr-greeting
     permissions:
       packages: write
     steps:
@@ -151,7 +153,10 @@ jobs:
   build-spring:
     name: Build Spring
     runs-on: ubuntu-22.04
-    needs: build-core
+    needs: 
+      - pr-validation
+      - pr-greeting
+      - build-core
     permissions:
       packages: write
     steps:
