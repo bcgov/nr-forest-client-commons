@@ -49,6 +49,9 @@ jobs:
           git-push: "false"
           git-branch: refs/heads/${{ github.head_ref }}
 
+      - name: Test
+        run: echo new version ${{ steps.changelog.outputs.version }}
+
       - name: Checkout pr
         uses: actions/checkout@v3
         with:
@@ -145,6 +148,10 @@ jobs:
           cache: 'maven'
           server-id: 'github'
           settings-path: ${{ github.workspace }}
+
+      - name: Update core dependency
+        run: | 
+          mvn versions:use-dep-version -DdepVersion=0.0.2 -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true
 
       - name: Run Tests
         run: |
