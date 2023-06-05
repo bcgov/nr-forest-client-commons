@@ -68,6 +68,14 @@ jobs:
             ${{ steps.changelog.outputs.clean_changelog }}
           comment_tag: "# Current changelog"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Removing old packages
+        uses: jackhowa/delete-github-package-versions@v0.4.9
+        continue-on-error: true
+        with:          
+          version-pattern: "^\\d+\\.\\d+\\.\\d+.PR${{ github.event.number }}+$"
+          token: ${{ github.token }}
+          names: ca.bc.gov.nrs-commons.forest-client-core
     
   pr-greeting:
     name: PR Greeting
@@ -103,14 +111,7 @@ jobs:
             
             Once merged, the code will be promoted and handed off to the following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
-      - name: Removing old packages
-        uses: jackhowa/delete-github-package-versions@v0.4.9
-        continue-on-error: true
-        with:
-          version: "${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
-          token: ${{ github.token }}
-          names: ca.bc.gov.nrs-commons.forest-client-core
+      
 
   build-core:
     name: Build Core
