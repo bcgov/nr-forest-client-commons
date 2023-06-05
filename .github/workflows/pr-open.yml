@@ -49,7 +49,7 @@ jobs:
           git-push: "false"
           git-branch: refs/heads/${{ github.head_ref }}
           skip-on-empty: "false"
-      
+
       - name: Test
         run: echo new version ${{ steps.changelog.outputs.version }}
 
