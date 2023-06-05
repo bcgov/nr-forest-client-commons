@@ -5,7 +5,7 @@
 
     <groupId>ca.bc.gov.nrs-commons</groupId>
     <artifactId>forest-client-core</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>forest-client-core</name>
     <description>Forest Client Commons Core</description>
 
