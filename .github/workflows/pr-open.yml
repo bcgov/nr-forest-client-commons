@@ -73,7 +73,8 @@ jobs:
         uses: jackhowa/delete-github-package-versions@v0.4.9
         continue-on-error: true
         with:          
-          version-pattern: ".+PR${{ github.event.number }}"
+          version: "${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}"
+          versions: "${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}"
           token: ${{ github.token }}
           names: ca.bc.gov.nrs-commons.forest-client-core
     
