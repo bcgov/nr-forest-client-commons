@@ -127,8 +127,8 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>${jacoco.output.data}/jacocoexec</dataFile>
-                            <outputDirectory>${jacoco.output.data}</outputDirectory>
+                            <dataFile>${jacoco.output.data}/jacoco.exec</dataFile>
+                            <outputDirectory>${jacoco.output.data}/merged-test-report</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
