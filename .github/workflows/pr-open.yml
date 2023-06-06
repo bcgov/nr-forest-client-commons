@@ -70,7 +70,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Removing old core
-        uses: paulushcgcj/delete-github-package@v1.0.0
+        uses: paulushcgcj/delete-github-package@1.0.0
         continue-on-error: true
         with:
           token: ${{ github.token }}
@@ -80,7 +80,7 @@ jobs:
           user: ${{ github.repository_owner }}
       
       - name: Removing old spring
-        uses: paulushcgcj/delete-github-package@v1.0.0
+        uses: paulushcgcj/delete-github-package@1.0.0
         continue-on-error: true
         with:
           token: ${{ github.token }}
