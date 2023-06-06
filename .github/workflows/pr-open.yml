@@ -76,7 +76,7 @@ jobs:
           token: ${{ github.token }}
           type: maven
           name: ca.bc.gov.nrs-commons.forest-client-core
-          version: ${{ steps.changelog.outputs.version }}
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
       
       - name: Removing old spring
@@ -86,7 +86,7 @@ jobs:
           token: ${{ github.token }}
           type: maven
           name: ca.bc.gov.nrs-commons.forest-client-spring
-          version: ${{ steps.changelog.outputs.version }}
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
     
   pr-greeting:
