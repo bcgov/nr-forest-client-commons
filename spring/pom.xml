@@ -472,4 +472,13 @@
             </snapshots>
         </repository>
     </repositories>
+
+     <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Github Packages</name>
+            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+        </repository>
+    </distributionManagement>
+
 </project>
