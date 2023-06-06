@@ -137,7 +137,7 @@ jobs:
         run: |          
           mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
           mvn versions:commit
-          mvn -B source:jar javadoc:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -176,6 +176,6 @@ jobs:
         run: |
           mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
           mvn versions:commit --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-          mvn -B source:jar javadoc:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
