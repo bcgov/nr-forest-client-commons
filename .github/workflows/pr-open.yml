@@ -69,8 +69,25 @@ jobs:
           comment_tag: "# Current changelog"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Removing old packages
-        run: echo TBD
+      - name: Removing old core
+        uses: paulushcgcj/delete-github-package@v1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-core
+          version: ${{ steps.changelog.outputs.version }}
+          user: ${{ github.repository_owner }}
+      
+      - name: Removing old spring
+        uses: paulushcgcj/delete-github-package@v1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ github.token }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-spring
+          version: ${{ steps.changelog.outputs.version }}
+          user: ${{ github.repository_owner }}
     
   pr-greeting:
     name: PR Greeting
