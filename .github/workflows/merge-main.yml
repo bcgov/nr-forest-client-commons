@@ -76,12 +76,116 @@ jobs:
       - name: Build Core
         run: |
           cd core
-          ./mvnw clean package
+          mvn clean package
 
       - name: Build Spring
         run: |
           cd spring
-          ./mvnw clean package
+          mvn clean package
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+
+  release:
+    name: Release dependencies
+    outputs:
+      version: ${{ steps.changelog.outputs.version }}
+    needs:
+      - codeql
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Conventional Changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        id: changelog
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
+          skip-on-empty: "false"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: ${{ steps.changelog.outputs.tag != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          token: ${{ github.token }}
+          tag_name: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+
+  release-core:
+    name: Build Core
+    runs-on: ubuntu-22.04
+    needs:
+      - release
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: 'github'
+          settings-path: ${{ github.workspace }}
+
+      - name: Run Tests
+        working-directory: ./core
+        run: mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Publish Core
+        working-directory: ./core
+        run: |
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:commit
+          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  release-spring:
+    name: Build Spring
+    runs-on: ubuntu-22.04
+    needs:
+      - release
+      - release-core
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: 'github'
+          settings-path: ${{ github.workspace }}
+
+      - name: Update core dependency
+        working-directory: ./spring
+        run: |
+          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Run Tests
+        working-directory: ./spring
+        run: mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+
+      - name: Publish Spring
+        working-directory: ./spring
+        run: |
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:commit --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
