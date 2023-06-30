@@ -88,7 +88,8 @@ jobs:
           name: ca.bc.gov.nrs-commons.forest-client-spring
           version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
-    
+
+
   pr-greeting:
     name: PR Greeting
     runs-on: ubuntu-22.04
@@ -125,6 +126,7 @@ jobs:
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
       
 
+
   build-core:
     name: Build Core
     runs-on: ubuntu-22.04
@@ -157,6 +159,14 @@ jobs:
           mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Commit & Push changes
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coauthor_email: ${{ github.actor }}@users.noreply.github.com
+          coauthor_name: ${{ github.actor }}
+          message: "chore: update core dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
 
   build-spring:
     name: Build Spring
@@ -196,3 +206,11 @@ jobs:
           mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Commit & Push changes
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coauthor_email: ${{ github.actor }}@users.noreply.github.com
+          coauthor_name: ${{ github.actor }}
+          message: "chore: update spring dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
