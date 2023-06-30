@@ -164,6 +164,7 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          author_email: bcgov-renovate@users.noreply.github.com
           coauthor_email: ${{ github.actor }}@users.noreply.github.com
           coauthor_name: ${{ github.actor }}
           message: "chore: update core dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
@@ -211,6 +212,7 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          author_email: bcgov-renovate@users.noreply.github.com
           coauthor_email: ${{ github.actor }}@users.noreply.github.com
           coauthor_name: ${{ github.actor }}
           message: "chore: update spring dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
