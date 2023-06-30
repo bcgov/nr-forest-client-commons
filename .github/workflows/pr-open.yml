@@ -165,6 +165,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           author_email: bcgov-renovate@users.noreply.github.com
+          author_name: "BCGov-NR Renovate Bot"
           coauthor_email: ${{ github.actor }}@users.noreply.github.com
           coauthor_name: ${{ github.actor }}
           message: "chore: update core dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
@@ -213,6 +214,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           author_email: bcgov-renovate@users.noreply.github.com
+          author_name: "BCGov-NR Renovate Bot"
           coauthor_email: ${{ github.actor }}@users.noreply.github.com
           coauthor_name: ${{ github.actor }}
           message: "chore: update spring dependency to ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}"
