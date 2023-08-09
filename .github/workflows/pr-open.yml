@@ -204,15 +204,11 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - name: Update core dependency
-        working-directory: ./spring
-        run: |
-          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         name: Spring Coverage
         with:
           commands: |
+            mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
             mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: spring
           java-cache: maven
@@ -226,6 +222,7 @@ jobs:
       - name: Publish Spring
         working-directory: ./spring
         run: |
+          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
           mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
           mvn versions:commit --file pom.xml
           mvn -B source:jar deploy --file pom.xml
