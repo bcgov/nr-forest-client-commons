@@ -74,4 +74,4 @@ jobs:
           registry: ghcr.io
           repository: ${{ github.repository }}/certextractor
           target: ${{ github.event.number }}
-          tags: test
+          tags: prod
