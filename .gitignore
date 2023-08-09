@@ -227,3 +227,6 @@ config/application-dev-*.yml
 .checkstyle
 
 **/*.iml
+
+.DS_Store
+**/.DS_Store

@@ -97,7 +97,7 @@ jobs:
       pull-requests: write
     steps:
       - name: PR Greeting
-        uses: bcgov-nr/action-pr-description-add@v0.0.2
+        uses: bcgov-nr/action-pr-description-add@v1.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -125,14 +125,11 @@ jobs:
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   build-certextractor:
-    name: Builds
+    name: Builds Cert Extractor
     runs-on: ubuntu-22.04
     needs:
       - pr-validation
       - pr-greeting
-    permissions:
-      packages: write
-
     steps:
       - uses: actions/checkout@v3
 
@@ -163,7 +160,6 @@ jobs:
           distribution: "temurin"
           cache: "maven"
           server-id: "github"
-          settings-path: ${{ github.workspace }}
 
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         name: Core Coverage
@@ -182,9 +178,9 @@ jobs:
       - name: Publish Core
         working-directory: ./core
         run: |
-          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
           mvn versions:commit
-          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn -B source:jar deploy --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -207,12 +203,11 @@ jobs:
           distribution: "temurin"
           cache: "maven"
           server-id: "github"
-          settings-path: ${{ github.workspace }}
 
       - name: Update core dependency
         working-directory: ./spring
         run: |
-          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
 
       - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
         name: Spring Coverage
@@ -231,8 +226,8 @@ jobs:
       - name: Publish Spring
         working-directory: ./spring
         run: |
-          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-          mvn versions:commit --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-          mvn -B source:jar deploy --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
+          mvn versions:commit --file pom.xml
+          mvn -B source:jar deploy --file pom.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
