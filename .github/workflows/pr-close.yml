@@ -6,12 +6,10 @@ on:
       - closed
 
 concurrency:
-  # PR open and close use the same group, allowing only one at a time
-  group: pr-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
 jobs:
-  # Clean up OpenShift when PR closed, no conditions
   cleanup-jars:
     name: Cleanup Dev Images
     runs-on: ubuntu-22.04
@@ -38,8 +36,6 @@ jobs:
 
       - name: Checkout pr
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
 
       - name: Removing dev core
         uses: paulushcgcj/delete-github-package@1.0.0
@@ -59,10 +55,7 @@ jobs:
           type: maven
           name: ca.bc.gov.nrs-commons.forest-client-spring
           version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
-          user:
-            ${{ github.repository_owner }}
-
-            # If merged into main, then handle any image promotions
+          user: ${{ github.repository_owner }}
 
   image-promotions:
     name: Image Promotions
