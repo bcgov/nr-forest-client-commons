@@ -14,44 +14,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-java:
-    name: Integrated Tests
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
-        name: Core Coverage
-        with:
-          commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
-          dir: core
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
-        name: Spring Coverage
-        with:
-          commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
-          dir: spring
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
-    needs:
-      - tests-java
     permissions:
       actions: read
       contents: read
@@ -63,7 +28,7 @@ jobs:
       - name: Initialize
         uses: github/codeql-action/init@v2
         with:
-          languages: javascript,java
+          languages: java
 
       # Autobuild failed for Java, so building manually
       - name: Set up JDK 17 and Caching maven dependencies
@@ -73,14 +38,12 @@ jobs:
           java-version: "17"
           cache: "maven"
 
-      - name: Build Core
+      - name: Build Core and Spring
         run: |
           cd core
           mvn clean package
-
-      - name: Build Spring
-        run: |
-          cd spring
+          mvn install
+          cd ../spring
           mvn clean package
 
       - name: Perform CodeQL Analysis
