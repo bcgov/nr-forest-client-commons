@@ -119,7 +119,7 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Core Coverage
         with:
           commands: |
@@ -161,11 +161,11 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Spring Coverage
         with:
           commands: |
-            mvn versions:use-dep-version -DdepVersion=${{ needs.release.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+            mvn versions:use-dep-version -DdepVersion='${{ needs.release.outputs.version }}' -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
             mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
           dir: spring
           java-cache: maven
@@ -179,7 +179,7 @@ jobs:
       - name: Publish Spring
         working-directory: ./spring
         run: |
-          mvn versions:use-dep-version -DdepVersion=${{ needs.release.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+          mvn versions:use-dep-version -DdepVersion='${{ needs.release.outputs.version }}' -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
           mvn versions:set -DnewVersion='${{ needs.release.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml
           mvn versions:commit --file pom.xml
           mvn -B source:jar deploy --file pom.xml

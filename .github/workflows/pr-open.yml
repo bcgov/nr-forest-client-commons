@@ -161,7 +161,7 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Core Coverage
         with:
           commands: |
@@ -204,7 +204,7 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Spring Coverage
         with:
           commands: |

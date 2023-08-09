@@ -18,8 +18,6 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v3
-        with:
-          ref: refs/heads/${{ github.head_ref }}
 
       - name: Conventional Changelog Update
         continue-on-error: true
@@ -31,11 +29,7 @@ jobs:
           skip-version-file: "true"
           skip-commit: "true"
           git-push: "false"
-          git-branch: refs/heads/${{ github.head_ref }}
           skip-on-empty: "false"
-
-      - name: Checkout pr
-        uses: actions/checkout@v3
 
       - name: Removing dev core
         uses: paulushcgcj/delete-github-package@1.0.0
