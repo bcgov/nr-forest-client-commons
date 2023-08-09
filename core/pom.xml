@@ -5,7 +5,7 @@
 
     <groupId>ca.bc.gov.nrs-commons</groupId>
     <artifactId>forest-client-core</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>forest-client-core</name>
     <description>Forest Client Commons Core</description>
 
@@ -37,8 +37,9 @@
 
         <sonar.organization>bcgov-sonarcloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>nr-forest-client_processor</sonar.projectKey>
-        <sonar.coverage.jacoco.xmlReportPaths>target/coverage-reports/merged-test-report/jacoco.xml
+        <sonar.projectKey>bcgov_nr-forest-client-commons</sonar.projectKey>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            target/coverage-reports/merged-test-report/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.coverage.exclusions>
             **/dto/**,
@@ -127,8 +128,8 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>${jacoco.output.data}/jacocoexec</dataFile>
-                            <outputDirectory>${jacoco.output.data}</outputDirectory>
+                            <dataFile>${jacoco.output.data}/jacoco.exec</dataFile>
+                            <outputDirectory>${jacoco.output.data}/merged-test-report</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -269,5 +270,13 @@
             </properties>
         </profile>
     </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Github Packages</name>
+            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+        </repository>
+    </distributionManagement>
 
 </project>

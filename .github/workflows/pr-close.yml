@@ -1,0 +1,77 @@
+name: Pull Request Close
+
+on:
+  pull_request:
+    types:
+      - closed
+
+concurrency:
+  # PR open and close use the same group, allowing only one at a time
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Clean up OpenShift when PR closed, no conditions
+  cleanup-jars:
+    name: Cleanup Dev Images
+    runs-on: ubuntu-22.04
+    env:
+      NAME: ${{ github.event.repository.name }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/${{ github.head_ref }}
+
+      - name: Conventional Changelog Update
+        continue-on-error: true
+        uses: TriPSs/conventional-changelog-action@v3
+        id: changelog
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
+          git-branch: refs/heads/${{ github.head_ref }}
+          skip-on-empty: "false"
+
+      - name: Checkout pr
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Removing dev core
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-core
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
+          user: ${{ github.repository_owner }}
+
+      - name: Removing dev spring
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-spring
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
+          user:
+            ${{ github.repository_owner }}
+
+            # If merged into main, then handle any image promotions
+
+  image-promotions:
+    name: Image Promotions
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/certextractor
+          target: ${{ github.event.number }}
+          tags: prod

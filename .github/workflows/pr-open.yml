@@ -1,0 +1,230 @@
+name: Pull Request Open
+
+on:
+  pull_request:
+
+concurrency:
+  # PR open and close use the same group, allowing only one at a time
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-validation:
+    name: Pull Request Validation
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      version: ${{ steps.changelog.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Pull request size and stability labels
+        uses: actions/labeler@v4
+        continue-on-error: true
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Conventional Label
+        uses: bcoe/conventional-release-labels@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ignored_types: '["chore","pr"]'
+          type_labels: '{"feat": "feature", "fix": "fix", "bug": "fix", "doc": "documentation", "ci": "ci", "chore": "chore", "breaking": "breaking", "BREAKING CHANGE": "breaking"}'
+
+      - name: Checkout branch
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/${{ github.head_ref }}
+
+      - name: Conventional Changelog Update
+        continue-on-error: true
+        uses: TriPSs/conventional-changelog-action@v3
+        id: changelog
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
+          git-branch: refs/heads/${{ github.head_ref }}
+          skip-on-empty: "false"
+
+      - name: Checkout pr
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Comment PR
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          message: |
+            # Current changelog
+
+            ${{ steps.changelog.outputs.clean_changelog }}
+          comment_tag: "# Current changelog"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Removing old core
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-core
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
+          user: ${{ github.repository_owner }}
+
+      - name: Removing old spring
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-spring
+          version: ${{ steps.changelog.outputs.version }}.PR${{ github.event.number }}
+          user: ${{ github.repository_owner }}
+
+  pr-greeting:
+    name: PR Greeting
+    runs-on: ubuntu-22.04
+    needs: pr-validation
+    permissions:
+      pull-requests: write
+    steps:
+      - name: PR Greeting
+        uses: bcgov-nr/action-pr-description-add@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add_markdown: |
+            ---
+            Thanks for the PR!
+
+
+            ```
+            <dependency>
+              <groupId>ca.bc.gov.nrs-commons</groupId>
+              <artifactId>forest-client-core</artifactId>
+              <version>${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}</version>
+            </dependency>
+            ```
+
+            ```
+            <dependency>
+              <groupId>ca.bc.gov.nrs-commons</groupId>
+              <artifactId>forest-client-spring</artifactId>
+              <version>${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}</version>
+            </dependency>
+            ```
+
+            Once merged, the code will be promoted and handed off to the following workflow run.
+            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  build-certextractor:
+    name: Builds Cert Extractor
+    runs-on: ubuntu-22.04
+    needs:
+      - pr-validation
+      - pr-greeting
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: bcgov-nr/action-builder-ghcr@v1.2.0
+        name: Build Cert Extractor
+        with:
+          package: certextractor
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: "certextractor/"
+
+  build-core:
+    name: Build Core
+    runs-on: ubuntu-22.04
+    needs:
+      - pr-validation
+      - pr-greeting
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+          server-id: "github"
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Core Coverage
+        with:
+          commands: |
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: core
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=bcgov_nr-forest-client-commons
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+
+      - name: Publish Core
+        working-directory: ./core
+        run: |
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
+          mvn versions:commit
+          mvn -B source:jar deploy --file pom.xml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  build-spring:
+    name: Build Spring
+    runs-on: ubuntu-22.04
+    needs:
+      - pr-validation
+      - pr-greeting
+      - build-core
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "maven"
+          server-id: "github"
+
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+        name: Spring Coverage
+        with:
+          commands: |
+            mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          dir: spring
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          sonar_args: >
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=bcgov_nr-forest-client-commons
+          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+
+      - name: Publish Spring
+        working-directory: ./spring
+        run: |
+          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
+          mvn versions:commit --file pom.xml
+          mvn -B source:jar deploy --file pom.xml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
