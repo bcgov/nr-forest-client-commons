@@ -134,11 +134,13 @@ jobs:
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Core
-        working-directory: ./core
-        run: |
-          mvn versions:set -DnewVersion='${{ needs.release.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit
-          mvn -B source:jar deploy --file pom.xml
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:
+          dir: core
+          app-version: ${{ needs.release.outputs.version }}
+          extra-params: -DskipTests -Dtests.skip=true
+          add-sources: true
+          add-javadoc: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -177,11 +179,13 @@ jobs:
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Spring
-        working-directory: ./spring
-        run: |
-          mvn versions:use-dep-version -DdepVersion='${{ needs.release.outputs.version }}' -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-          mvn versions:set -DnewVersion='${{ needs.release.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit --file pom.xml
-          mvn -B source:jar deploy --file pom.xml
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:
+          commands: mvn versions:use-dep-version -DdepVersion=${{ needs.release.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+          dir: spring
+          app-version: ${{ needs.release.outputs.version }}
+          extra-params: -DskipTests -Dtests.skip=true
+          add-sources: true
+          add-javadoc: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
