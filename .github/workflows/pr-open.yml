@@ -176,11 +176,15 @@ jobs:
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Core
-        working-directory: ./core
-        run: |
-          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit
-          mvn -B source:jar deploy --file pom.xml
+        uses: paulushcgcj/action-java-publish@v0.0.1
+        with:
+          commands: echo ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          dir: core
+          app-version: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
+          extra-params: -DskipTests -Dtests.skip=true
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
