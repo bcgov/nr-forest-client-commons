@@ -6,8 +6,13 @@ import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
+/**
+ * <p><b>Log Util</b></p>
+ * <p>Utility class for logging.</p>
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LogUtil {
+
   /**
    * <p><b>Log Content</b></p>
    * Log the content of the future at the specified level.

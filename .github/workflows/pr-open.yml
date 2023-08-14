@@ -183,6 +183,9 @@ jobs:
           extra-params: -DskipTests -Dtests.skip=true
           add-sources: true
           add-javadoc: true
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -230,5 +233,8 @@ jobs:
           extra-params: -DskipTests -Dtests.skip=true
           add-sources: true
           add-javadoc: true
+          java-cache: maven
+          java-distribution: temurin
+          java-version: "17"
         env:
           GITHUB_TOKEN: ${{ github.token }}
