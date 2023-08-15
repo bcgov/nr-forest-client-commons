@@ -153,15 +153,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: "maven"
-          server-id: "github"
-
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Core Coverage
         with:
           commands: |
@@ -176,11 +168,13 @@ jobs:
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Core
-        working-directory: ./core
-        run: |
-          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit
-          mvn -B source:jar deploy --file pom.xml
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:
+          dir: core
+          app-version: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          extra-params: -DskipTests -Dtests.skip=true
+          add-sources: true
+          add-javadoc: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -196,15 +190,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: "maven"
-          server-id: "github"
-
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.1.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Spring Coverage
         with:
           commands: |
@@ -220,11 +206,13 @@ jobs:
           sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Spring
-        working-directory: ./spring
-        run: |
-          mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-          mvn versions:set -DnewVersion='${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit --file pom.xml
-          mvn -B source:jar deploy --file pom.xml
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:
+          commands: mvn versions:use-dep-version -DdepVersion=${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
+          dir: spring
+          app-version: ${{ needs.pr-validation.outputs.version }}.PR${{ github.event.number }}
+          extra-params: -DskipTests -Dtests.skip=true
+          add-sources: true
+          add-javadoc: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
