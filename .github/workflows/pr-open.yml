@@ -153,14 +153,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: "maven"
-          server-id: "github"
-
       - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Core Coverage
         with:
@@ -183,9 +175,6 @@ jobs:
           extra-params: -DskipTests -Dtests.skip=true
           add-sources: true
           add-javadoc: true
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -200,14 +189,6 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: "maven"
-          server-id: "github"
 
       - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
         name: Spring Coverage
@@ -233,8 +214,5 @@ jobs:
           extra-params: -DskipTests -Dtests.skip=true
           add-sources: true
           add-javadoc: true
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
         env:
           GITHUB_TOKEN: ${{ github.token }}
