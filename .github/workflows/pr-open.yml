@@ -18,7 +18,7 @@ jobs:
     outputs:
       version: ${{ steps.changelog.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Pull request size and stability labels
         uses: actions/labeler@v4
@@ -35,13 +35,13 @@ jobs:
           type_labels: '{"feat": "feature", "fix": "fix", "bug": "fix", "doc": "documentation", "ci": "ci", "chore": "chore", "breaking": "breaking", "BREAKING CHANGE": "breaking"}'
 
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ github.head_ref }}
 
       - name: Conventional Changelog Update
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v4
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -53,7 +53,7 @@ jobs:
           skip-on-empty: "false"
 
       - name: Checkout pr
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
@@ -131,9 +131,9 @@ jobs:
       - pr-validation
       - pr-greeting
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v1.2.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.0
         name: Build Cert Extractor
         with:
           package: certextractor
@@ -151,9 +151,9 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Core Coverage
         with:
           commands: |
@@ -188,9 +188,9 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v0.2.0
+      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.0
         name: Spring Coverage
         with:
           commands: |
