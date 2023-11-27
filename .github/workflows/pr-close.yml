@@ -17,11 +17,11 @@ jobs:
       NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Conventional Changelog Update
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v4
         id: changelog
         with:
           github-token: ${{ github.token }}
