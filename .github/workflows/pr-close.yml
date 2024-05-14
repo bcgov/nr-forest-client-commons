@@ -17,11 +17,11 @@ jobs:
       NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Conventional Changelog Update
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v5
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -56,7 +56,7 @@ jobs:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-22.04
     steps:
-      - uses: shrink/actions-docker-registry-tag@v3
+      - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/certextractor
