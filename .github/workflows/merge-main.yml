@@ -123,7 +123,7 @@ jobs:
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=bcgov_nr-forest-client-commons
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+            sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Core
         uses: paulushcgcj/action-java-publish@v0.1.1
@@ -160,7 +160,7 @@ jobs:
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=bcgov_nr-forest-client-commons
-          sonar_project_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+            sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
       - name: Publish Spring
         uses: paulushcgcj/action-java-publish@v0.1.1
