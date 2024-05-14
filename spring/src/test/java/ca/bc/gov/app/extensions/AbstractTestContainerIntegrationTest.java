@@ -19,7 +19,7 @@ public abstract class AbstractTestContainerIntegrationTest {
   static final OracleContainer database;
 
   static {
-    database = new OracleContainer("gvenzl/oracle-xe:21.3.0-slim-faststart")
+    database = new OracleContainer("gvenzl/oracle-xe:18.4.0-slim-faststart")
         .withDatabaseName("legacyfsa")
         .withUsername("THE")
         .withPassword(UUID.randomUUID().toString().substring(24));
@@ -43,7 +43,7 @@ public abstract class AbstractTestContainerIntegrationTest {
     registry
         .add(
             "ca.bc.gov.nrs.oracle.host",
-            () -> "127.0.0.1"//database::getHost
+            database::getHost
         );
 
     registry
