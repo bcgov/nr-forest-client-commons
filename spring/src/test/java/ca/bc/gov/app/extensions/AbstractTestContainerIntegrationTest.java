@@ -43,7 +43,7 @@ public abstract class AbstractTestContainerIntegrationTest {
     registry
         .add(
             "ca.bc.gov.nrs.oracle.host",
-            () -> "127.0.0.1"//database::getHost
+            database::getHost
         );
 
     registry

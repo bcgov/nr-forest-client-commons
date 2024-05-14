@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -10,86 +11,87 @@
         <relativePath/>
     </parent>
 
-    <groupId>ca.bc.gov.nrs-commons</groupId>
-    <artifactId>forest-client-spring</artifactId>
-    <version>0.0.1</version>
-    <name>forest-client-spring</name>
-    <description>Forest Client Spring Commons</description>
+  <groupId>ca.bc.gov.nrs-commons</groupId>
+  <artifactId>forest-client-spring</artifactId>
+  <version>0.0.1</version>
+  <name>forest-client-spring</name>
+  <description>Forest Client Spring Commons</description>
 
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <jdk.version>17</jdk.version>
-        <maven.compiler.version>3.10.1</maven.compiler.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>17</java.version>
+    <jdk.version>17</jdk.version>
+    <maven.compiler.version>3.10.1</maven.compiler.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <skip.integration.tests>true</skip.integration.tests>
-        <skip.unit.tests>false</skip.unit.tests>
-        <jacoco.skip>true</jacoco.skip>
-        <checkstyle.skip>true</checkstyle.skip>
+    <skip.integration.tests>true</skip.integration.tests>
+    <skip.unit.tests>false</skip.unit.tests>
+    <jacoco.skip>true</jacoco.skip>
+    <checkstyle.skip>true</checkstyle.skip>
 
-        <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
+    <jacoco.output.data>${project.build.directory}/coverage-reports</jacoco.output.data>
 
-        <timestamp>${maven.build.timestamp}</timestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 
-        <sonar.organization>bcgov-sonarcloud</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.projectKey>bcgov_nr-forest-client-commons</sonar.projectKey>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            target/coverage-reports/merged-test-report/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.coverage.exclusions>
-            **/configuration/**,
-            **/exception/**,
-            **/dto/**,
-            **/entity/**,
-            **/models/**,
-            **/repository/**,
-            **/*$*Builder*,
-            **/ApplicationConstant*
-        </sonar.coverage.exclusions>
-        <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
+    <sonar.organization>bcgov-sonarcloud</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.projectKey>bcgov_nr-forest-client-commons</sonar.projectKey>
+    <sonar.coverage.jacoco.xmlReportPaths>
+      target/coverage-reports/merged-test-report/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.exclusions>
+      **/configuration/**,
+      **/exception/**,
+      **/dto/**,
+      **/entity/**,
+      **/models/**,
+      **/repository/**,
+      **/*$*Builder*,
+      **/ApplicationConstant*
+    </sonar.coverage.exclusions>
+    <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml
+    </sonar.java.checkstyle.reportPaths>
 
         <testcontainers.version>1.19.8</testcontainers.version>
 
-        <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
-        <junit-platform.version>1.9.1</junit-platform.version>
-        <oci.revision>${project.version}</oci.revision>
-    </properties>
+    <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
+    <junit-platform.version>1.9.1</junit-platform.version>
+    <oci.revision>${project.version}</oci.revision>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>ca.bc.gov.nrs-commons</groupId>
-            <artifactId>forest-client-core</artifactId>
-            <version>0.0.2</version>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>ca.bc.gov.nrs-commons</groupId>
+      <artifactId>forest-client-core</artifactId>
+      <version>0.0.2</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -156,22 +158,27 @@
         </dependency>
     </dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>${testcontainers.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-			<dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>2.2</version>
-			</dependency>
-        </dependencies>
-    </dependencyManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.yaml</groupId>
+        <artifactId>snakeyaml</artifactId>
+        <version>2.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-core</artifactId>
+        <version>9.16.3</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
     <build>
         <plugins>
@@ -425,60 +432,60 @@
                 </configuration>
             </plugin>
 
-        </plugins>
-        <finalName>nr-forest-client-backend</finalName>
-    </build>
+    </plugins>
+    <finalName>nr-forest-client-backend</finalName>
+  </build>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-        </profile>
+  <profiles>
+    <profile>
+      <id>dev</id>
+    </profile>
 
-        <profile>
-            <id>all-tests</id>
-            <properties>
-                <build.profile.id>all-tests</build.profile.id>
-                <skip.integration.tests>false</skip.integration.tests>
-                <skip.unit.tests>false</skip.unit.tests>
-                <jacoco.skip>false</jacoco.skip>
-            </properties>
-        </profile>
+    <profile>
+      <id>all-tests</id>
+      <properties>
+        <build.profile.id>all-tests</build.profile.id>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>false</skip.unit.tests>
+        <jacoco.skip>false</jacoco.skip>
+      </properties>
+    </profile>
 
-        <profile>
-            <id>integration-test</id>
-            <properties>
-                <build.profile.id>integration-test</build.profile.id>
-                <skip.integration.tests>false</skip.integration.tests>
-                <skip.unit.tests>true</skip.unit.tests>
-            </properties>
-        </profile>
-    </profiles>
+    <profile>
+      <id>integration-test</id>
+      <properties>
+        <build.profile.id>integration-test</build.profile.id>
+        <skip.integration.tests>false</skip.integration.tests>
+        <skip.unit.tests>true</skip.unit.tests>
+      </properties>
+    </profile>
+  </profiles>
 
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>github</id>
-            <name>Github Packages</name>
-            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>github</id>
+      <name>Github Packages</name>
+      <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
-     <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>Github Packages</name>
-            <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
-        </repository>
-    </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>Github Packages</name>
+      <url>https://maven.pkg.github.com/bcgov/nr-forest-client-commons</url>
+    </repository>
+  </distributionManagement>
 
 </project>
