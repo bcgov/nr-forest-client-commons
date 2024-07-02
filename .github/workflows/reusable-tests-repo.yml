@@ -10,8 +10,12 @@ jobs:
     outputs:
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
+      pr: ${{ steps.pr.outputs.pr }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
       - uses: actions/checkout@v4
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
@@ -80,15 +84,8 @@ jobs:
 
       - name: Build Spring
         if: github.event_name != 'pull_request'
-        uses: nick-fields/retry@v2        
-        with:
-          max_attempts: 3
-          retry_on: error
-          timeout_minutes: 10
-          retry_wait_seconds: 90
-          command: |
-            cd spring  
-            mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}
+        working-directory: spring
+        run: mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
       
       - name: Build Spring
         if: github.event_name == 'pull_request'
