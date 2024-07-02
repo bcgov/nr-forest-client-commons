@@ -90,20 +90,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
-        name: Core Coverage
-        with:
-          commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
-          dir: core
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-            sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-
       - name: Publish Core
         uses: paulushcgcj/action-java-publish@v0.1.1
         with:
@@ -124,16 +110,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
-        name: Spring Coverage
-        with:
-          commands: |            
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }} --file pom.xml
+      - name: Publish Spring
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:          
           dir: spring
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-          sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+          app-version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
+          extra-params: -DskipTests -Dtests.skip=true -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
+          add-sources: true
+          add-javadoc: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
