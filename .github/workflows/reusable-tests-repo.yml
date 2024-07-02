@@ -76,23 +76,21 @@ jobs:
           java-version: "17"
           cache: "maven"
           server-id: "github"
-          server-username: "${{ github.actor }}"
-          server-password: "${{ secrets.GITHUB_TOKEN }}"
 
       # Java builds
       - name: Build Core
         working-directory: core
-        run: mvn clean package
+        run: mvn clean -DskipTests -Dtests.skip=true -DnewVersion=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}} versions:commit package install
 
       - name: Build Spring
         if: github.event_name != 'pull_request'
         working-directory: spring
-        run: mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
+        run: mvn clean -DskipTests -Dtests.skip=true -DnewVersion=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}} versions:commit package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
       
       - name: Build Spring
         if: github.event_name == 'pull_request'
         working-directory: spring
-        run: mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
+        run: mvn clean -DskipTests -Dtests.skip=true -DnewVersion=${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}} versions:commit package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
