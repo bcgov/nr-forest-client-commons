@@ -76,6 +76,8 @@ jobs:
           java-version: "17"
           cache: "maven"
           server-id: "github"
+          server-username: "${{ github.actor }}"
+          server-password: "${{ secrets.GITHUB_TOKEN }}"
 
       # Java builds
       - name: Build Core
