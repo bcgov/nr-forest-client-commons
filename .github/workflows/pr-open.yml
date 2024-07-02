@@ -67,7 +67,7 @@ jobs:
   build-certextractor:
     name: Builds Cert Extractor
     runs-on: ubuntu-22.04
-    needs: [pr-validation]
+    needs: [vars, pr-validation]
     steps:
       - uses: actions/checkout@v4
 
@@ -75,7 +75,7 @@ jobs:
         name: Build Cert Extractor
         with:
           package: certextractor
-          tag: ${{ github.event.number }}
+          tag: ${{needs.vars.outputs.semver}}.PR${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: "certextractor/"
