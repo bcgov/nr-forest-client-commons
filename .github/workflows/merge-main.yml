@@ -14,47 +14,85 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  codeql:
-    name: Semantic Code Analysis
-    runs-on: ubuntu-22.04
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Initialize
-        uses: github/codeql-action/init@v3
-        with:
-          languages: java
-
-      # Autobuild failed for Java, so building manually
-      - name: Set up JDK 17 and Caching maven dependencies
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "17"
-          cache: "maven"
-
-      - name: Build Core and Spring
-        run: |
-          cd core
-          mvn clean package
-          mvn install
-          cd ../spring
-          mvn clean package
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
-  release:
-    name: Release dependencies
+  vars:
+    name: Set Variables
     outputs:
-      version: ${{ steps.changelog.outputs.version }}
-    needs:
-      - codeql
+      pr: ${{ steps.pr.outputs.pr }}
+      semver: ${{ steps.semver.outputs.version }}
+      tag: ${{ steps.semver.outputs.tag }}
+      clean_changelog: ${{ steps.semver.outputs.clean_changelog }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 1
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v5.3.0
+        id: semver
+        with:
+          git-branch: refs/heads/${{ github.head_ref }}
+          git-push: 'false'
+          skip-commit: 'true'
+          skip-on-empty: 'false'
+          skip-version-file: 'true'
+
+  certextractor:
+    name: Promote certextractor
+    needs: [vars]
+    runs-on: ubuntu-22.04    
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/certextractor
+          target: ${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
+          tags: ${{ needs.vars.outputs.semver }}
+
+  release-core:
+    name: Build Core
+    runs-on: ubuntu-22.04
+    needs: [vars]
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Core
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:
+          dir: core
+          app-version: ${{ needs.vars.outputs.semver }}
+          extra-params: -DskipTests -Dtests.skip=true
+          add-sources: true
+          add-javadoc: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  release-spring:
+    name: Build Spring
+    runs-on: ubuntu-22.04
+    needs: [vars, release-core]
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish Spring
+        uses: paulushcgcj/action-java-publish@v0.1.1
+        with:          
+          dir: spring
+          app-version: ${{ needs.vars.outputs.semver }}
+          extra-params: -DskipTests -Dtests.skip=true -Dcore.version=${{ needs.vars.outputs.semver }}
+          add-sources: true
+          add-javadoc: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  tagging:
+    name: Tagging library
+    needs: [vars,certextractor,release-core,release-spring]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -67,109 +105,14 @@ jobs:
           cache: "maven"
           server-id: "github"
 
-      - name: Conventional Changelog
-        uses: TriPSs/conventional-changelog-action@v5
-        id: changelog
-        continue-on-error: true
-        with:
-          github-token: ${{ github.token }}
-          output-file: "CHANGELOG.md"
-          skip-version-file: "true"
-          skip-commit: "true"
-          git-push: "false"
-          skip-on-empty: "false"
-
-      - name: Set version
-        run: |
-          cd core
-          mvn versions:set -DnewVersion='${{ steps.changelog.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit
-          cd ../spring
-          mvn versions:use-dep-version -DdepVersion=${{ steps.changelog.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-          mvn versions:set -DnewVersion='${{ steps.changelog.outputs.version }}' -DskipTests -Dtests.skip=true --file pom.xml
-          mvn versions:commit --file pom.xml
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: ${{ steps.changelog.outputs.tag != '' }}
+        if: ${{ needs.vars.outputs.tag != '' }}
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           token: ${{ github.token }}
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
-
-  release-core:
-    name: Build Core
-    runs-on: ubuntu-22.04
-    needs:
-      - release
-    permissions:
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
-        name: Core Coverage
-        with:
-          commands: |
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
-          dir: core
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-            sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-
-      - name: Publish Core
-        uses: paulushcgcj/action-java-publish@v0.1.1
-        with:
-          dir: core
-          app-version: ${{ needs.release.outputs.version }}
-          extra-params: -DskipTests -Dtests.skip=true
-          add-sources: true
-          add-javadoc: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-  release-spring:
-    name: Build Spring
-    runs-on: ubuntu-22.04
-    needs:
-      - release
-      - release-core
-    permissions:
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
-        name: Spring Coverage
-        with:
-          commands: |
-            mvn versions:use-dep-version -DdepVersion='${{ needs.release.outputs.version }}' -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
-          dir: spring
-          java-cache: maven
-          java-distribution: temurin
-          java-version: "17"
-          sonar_args: >
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
-            sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-
-      - name: Publish Spring
-        uses: paulushcgcj/action-java-publish@v0.1.1
-        with:
-          commands: mvn versions:use-dep-version -DdepVersion=${{ needs.release.outputs.version }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-          dir: spring
-          app-version: ${{ needs.release.outputs.version }}
-          extra-params: -DskipTests -Dtests.skip=true
-          add-sources: true
-          add-javadoc: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          tag_name: ${{ needs.vars.outputs.tag }}
+          name: ${{ needs.vars.outputs.tag }}
+          body: ${{ needs.vars.outputs.clean_changelog }}

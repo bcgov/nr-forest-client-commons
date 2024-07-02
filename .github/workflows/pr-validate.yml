@@ -1,0 +1,111 @@
+name: PR Validate
+
+on:
+  pull_request:
+    types: [edited, opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-edit-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  vars:
+    name: Variables
+    runs-on: ubuntu-latest
+    outputs:
+      semver: ${{ steps.semver.outputs.version }}
+      tag: ${{ steps.semver.outputs.tag }}
+    steps:
+      # steps.semver.outputs.tag => needs.vars.outputs.semver
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ github.event.repository.default_branch }}
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v5.3.0
+        id: semver
+        with:
+          git-branch: refs/heads/${{ github.head_ref }}
+          git-push: 'false'
+          skip-commit: 'true'
+          skip-on-empty: 'false'
+          skip-version-file: 'true'
+
+      - run: |
+          echo "semver=${{ steps.semver.outputs.version }}"
+          echo "tag=${{ steps.semver.outputs.tag }}"
+
+  validate:
+    name: Validate PR
+    needs: [vars]
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.4.1
+    with:
+      markdown_links: |
+        Any successful releases will be available as the following dependencyes:
+        ```
+          <dependency>
+            <groupId>ca.bc.gov.nrs-commons</groupId>
+            <artifactId>forest-client-core</artifactId>
+            <version>${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}</version>
+          </dependency>
+          ```
+
+          ```
+          <dependency>
+            <groupId>ca.bc.gov.nrs-commons</groupId>
+            <artifactId>forest-client-spring</artifactId>
+            <version>${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}</version>
+          </dependency>
+          ```
+
+          Once merged, the code will be promoted and handed off to the following workflow run.
+          [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  changelog:
+    name: Pull Request Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ github.head_ref }}
+
+      - name: Conventional Changelog Update
+        id: changelog
+        continue-on-error: true
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ github.token }}
+          output-file: "CHANGELOG.md"
+          skip-version-file: "true"
+          skip-commit: "true"
+          git-push: "false"
+          git-branch: refs/heads/${{ github.head_ref }}
+
+      - name: Checkout pr
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Comment PR
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          message: |
+            # Current changelog
+
+            ${{ steps.changelog.outputs.clean_changelog }}
+          comment_tag: "# Current changelog"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  results:
+    name: Validate Results
+    needs: [changelog, validate]
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "Workflow completed successfully!"
