@@ -79,6 +79,9 @@ jobs:
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: "certextractor/"
+          build_args: |
+            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            VERSION=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
 
   build-core:
     name: Build Core
