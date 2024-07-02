@@ -13,7 +13,8 @@ jobs:
     name: Variables
     runs-on: ubuntu-latest
     outputs:
-      semver: ${{ steps.semver.outputs.tag }}
+      semver: ${{ steps.semver.outputs.version }}
+      tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
       - uses: actions/checkout@v4
@@ -30,7 +31,8 @@ jobs:
           skip-version-file: 'true'
 
       - run: |
-          echo "semver=${{ steps.semver.outputs.tag }}"
+          echo "semver=${{ steps.semver.outputs.version }}"
+          echo "tag=${{ steps.semver.outputs.tag }}"
 
   validate:
     name: Validate PR
