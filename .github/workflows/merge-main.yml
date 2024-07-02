@@ -115,4 +115,21 @@ jobs:
           token: ${{ github.token }}
           tag_name: ${{ needs.vars.outputs.tag }}
           name: ${{ needs.vars.outputs.tag }}
-          body: ${{ needs.vars.outputs.clean_changelog }}
+          body: |
+            ${{ needs.vars.outputs.clean_changelog }}
+
+            ```
+            <dependency>
+              <groupId>ca.bc.gov.nrs-commons</groupId>
+              <artifactId>forest-client-core</artifactId>
+              <version>${{ needs.vars.outputs.semver }}</version>
+            </dependency>
+            ```
+
+            ```
+            <dependency>
+              <groupId>ca.bc.gov.nrs-commons</groupId>
+              <artifactId>forest-client-spring</artifactId>
+              <version>${{ needs.vars.outputs.semver }}</version>
+            </dependency>
+            ```
