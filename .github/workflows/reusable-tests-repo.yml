@@ -4,6 +4,31 @@ on:
   workflow_call:
 
 jobs:
+  vars:
+    name: Variables
+    runs-on: ubuntu-latest
+    outputs:
+      semver: ${{ steps.semver.outputs.version }}
+      tag: ${{ steps.semver.outputs.tag }}
+    steps:
+      # steps.semver.outputs.tag => needs.vars.outputs.semver
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ github.event.repository.default_branch }}
+      - name: Conventional Changelog Update
+        uses: TriPSs/conventional-changelog-action@v5.3.0
+        id: semver
+        with:
+          git-branch: refs/heads/${{ github.head_ref }}
+          git-push: 'false'
+          skip-commit: 'true'
+          skip-on-empty: 'false'
+          skip-version-file: 'true'
+
+      - run: |
+          echo "semver=${{ steps.semver.outputs.version }}"
+          echo "tag=${{ steps.semver.outputs.tag }}"
+
   trivy:
     name: Repository Report
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -28,6 +53,7 @@ jobs:
   codeql:
     name: Semantic Code Analysis
     runs-on: ubuntu-22.04
+    needs: [vars]
     permissions:
       actions: read
       contents: read
@@ -45,15 +71,22 @@ jobs:
           distribution: "temurin"
           java-version: "17"
           cache: "maven"
+          server-id: "github"
 
       # Java builds
       - name: Build Core
         working-directory: core
-        run: ./mvnw clean package
+        run: mvn clean package
 
       - name: Build Spring
+        if: github.event_name != 'pull_request'
         working-directory: spring
-        run: ./mvnw clean package
+        run: mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}
+      
+      - name: Build Spring
+        if: github.event_name == 'pull_request'
+        working-directory: spring
+        run: mvn clean package -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
