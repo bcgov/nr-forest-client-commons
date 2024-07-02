@@ -127,9 +127,8 @@ jobs:
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
         name: Spring Coverage
         with:
-          commands: |
-            mvn versions:use-dep-version -DdepVersion=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }} -Dincludes=ca.bc.gov.nrs-commons:forest-client-core -DforceVersion=true --file pom.xml
-            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
+          commands: |            
+            mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }} --file pom.xml
           dir: spring
           java-cache: maven
           java-distribution: temurin
