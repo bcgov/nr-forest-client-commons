@@ -75,4 +75,4 @@ jobs:
           name: ca.bc.gov.nrs-commons.forest-client-spring
           version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
-  
+
