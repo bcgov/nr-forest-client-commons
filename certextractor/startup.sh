@@ -7,6 +7,12 @@ mkdir -p $cert_folder
 
 generate_cert() {
 
+  if [ "$ORACLEDB_PORT" = "1521" ]; then
+    echo "ORACLEDB_PORT is set to insecure 1521. Skipping certificate generation."
+    return
+  fi
+
+
   echo "I will try to get the ${ORACLEDB_HOST}-1 cert"
   echo "Connecting to ${ORACLEDB_HOST}:${ORACLEDB_PORT}"
 
