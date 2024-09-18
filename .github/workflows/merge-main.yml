@@ -59,6 +59,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Removing old core
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-core
+          version: ${{ needs.vars.outputs.semver }}
+          user: ${{ github.repository_owner }}
+
       - name: Publish Core
         uses: paulushcgcj/action-java-publish@v0.1.1
         with:
@@ -78,6 +88,16 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Removing old spring
+        uses: paulushcgcj/delete-github-package@1.0.0
+        continue-on-error: true
+        with:
+          token: ${{ secrets.PAT }}
+          type: maven
+          name: ca.bc.gov.nrs-commons.forest-client-spring
+          version: ${{ needs.vars.outputs.semver }}
+          user: ${{ github.repository_owner }}
 
       - name: Publish Spring
         uses: paulushcgcj/action-java-publish@v0.1.1
