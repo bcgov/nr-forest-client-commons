@@ -1,5 +1,6 @@
 package ca.bc.gov.app.dto.legacy;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,14 +13,19 @@ public record ForestClientDto(
     String legalMiddleName,
     String clientStatusCode,
     String clientTypeCode,
+    LocalDate birthdate,
     String clientIdTypeCode,
     String clientIdentification,
     String registryCompanyTypeCode,
     String corpRegnNmbr,
-    String clientAcronym,
+    String clientComment,
+    String createdBy,
+    String updatedBy,
+    Long orgUnit,
+    String acronym,
     String wcbFirmNumber,
-    String ocgSupplierNmbr,
-    String clientComment
+    String ocgSupplierNmbr
+
 ) {
 
   public String legalName() {

@@ -1,6 +1,8 @@
 package ca.bc.gov.app.dto.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Enumeration representing the source of validation.
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum ValidationSourceEnum {
   EXTERNAL, STAFF;
 
-  private static final java.util.Map<String, ValidationSourceEnum> CONSTANTS = new java.util.HashMap<>();
+  private static final Map<String, ValidationSourceEnum> CONSTANTS = new HashMap<>();
 
   static {
     for (ValidationSourceEnum c : values()) {
