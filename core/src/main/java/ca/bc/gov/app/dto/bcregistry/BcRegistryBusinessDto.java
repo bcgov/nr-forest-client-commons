@@ -5,20 +5,30 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.With;
 
+/**
+ * Data Transfer Object (DTO) representing a business in the BC Registry.
+ */
 @With
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record BcRegistryBusinessDto(
-    List<BcRegistryAlternateNameDto> alternateNames,
+    List<BcRegistryAlternateNameDto> alternateNames, // List of alternate names for the business
     Boolean goodStanding,
-    Boolean hasCorrections,
-    Boolean hasCourtOrders,
-    Boolean hasRestrictions,
-    String identifier,
-    String legalName,
-    String legalType,
-    String state
+    // Indicates if the business is in good standing
+    Boolean hasCorrections,                          // Indicates if the business has corrections
+    Boolean hasCourtOrders,                          // Indicates if the business has court orders
+    Boolean hasRestrictions,                         // Indicates if the business has restrictions
+    String identifier,                               // The identifier of the business
+    String legalName,                                // The legal name of the business
+    String legalType,                                // The legal type of the business
+    String state                                     // The state of the business
 ) {
 
+  /**
+   * Resolves and returns the legal name of the business. If alternate names are available, it
+   * returns the first registered alternate name. Otherwise, it returns the legal name.
+   *
+   * @return the resolved legal name of the business
+   */
   public String getResolvedLegalName() {
 
     List<BcRegistryAlternateNameDto> names =
