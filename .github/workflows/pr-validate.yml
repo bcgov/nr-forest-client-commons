@@ -37,7 +37,7 @@ jobs:
   validate:
     name: Validate PR
     needs: [vars]
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.7.0
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.8.2
     with:
       markdown_links: |
         Any successful releases will be available as the following dependencyes:
@@ -93,7 +93,7 @@ jobs:
 
       - name: Comment PR
         continue-on-error: true
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         with:
           message: |
@@ -106,6 +106,6 @@ jobs:
   results:
     name: Validate Results
     needs: [changelog, validate]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "Workflow completed successfully!"
