@@ -1,37 +1,35 @@
-package ca.bc.gov.app.dto.client;
+package ca.bc.gov.app.dto.ches;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-/**
- * Enumeration representing the status of a submission.
- */
-@Getter
-@AllArgsConstructor
-public enum SubmissionStatusEnum {
-  P("In Progress"),
-  A("Approved"),
-  R("Rejected"),
-  D("Deleted"),
-  N("New");
+public enum ChesMailPriority {
 
-  private final String description;
-  private static final Map<String, SubmissionStatusEnum>
+  NORMAL("normal"),
+  LOW("low"),
+  HIGH("high");
+
+  @Getter
+  private final String value;
+  private static final Map<String, ChesMailPriority>
       CONSTANTS = new HashMap<>();
 
   static {
-    for (SubmissionStatusEnum c : values()) {
-      CONSTANTS.put(c.description, c);
+    for (ChesMailPriority c : values()) {
+      CONSTANTS.put(c.value, c);
     }
+  }
+
+  ChesMailPriority(String value) {
+    this.value = value;
   }
 
   @JsonValue
   public String value() {
-    return this.description;
+    return this.value;
   }
 
   /**
@@ -42,12 +40,13 @@ public enum SubmissionStatusEnum {
    * @throws IllegalArgumentException if no enum constant with the specified string value exists
    */
   @JsonCreator
-  public static SubmissionStatusEnum fromValue(String value) {
-    SubmissionStatusEnum constant = CONSTANTS.get(value);
+  public static ChesMailPriority fromValue(String value) {
+    ChesMailPriority constant = CONSTANTS.get(value);
     if (constant == null) {
       throw new IllegalArgumentException(value);
     } else {
       return constant;
     }
   }
+
 }

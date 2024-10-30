@@ -44,14 +44,12 @@
         <sonar.coverage.exclusions>
             **/dto/**,
             **/*$*Builder*,
-            **/LogUtil*
         </sonar.coverage.exclusions>
         <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
 
-        <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
-        <junit-platform.version>1.9.1</junit-platform.version>
-        <assertj.version>3.24.2</assertj.version>
+        <junit-jupiter-api.version>5.10.5</junit-jupiter-api.version>
         <oci.revision>${project.version}</oci.revision>
+        <assertj-core.version>3.25.3</assertj-core.version>
     </properties>
 
     <dependencies>
@@ -79,6 +77,36 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>2.2.25</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
         </dependency>
     </dependencies>
 
@@ -117,7 +145,6 @@
                     <excludes>
                         <exclude>**/dto/**</exclude>
                         <exclude>**/*$*Builder*</exclude>
-                        <exclude>**/LogUtil*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

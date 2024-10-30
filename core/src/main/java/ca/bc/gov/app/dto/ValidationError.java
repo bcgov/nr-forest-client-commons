@@ -1,7 +1,9 @@
 package ca.bc.gov.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.With;
+import org.apache.commons.lang3.StringUtils;
 
 @Schema(
     description = "Represents a validation error during submission",
@@ -20,4 +22,8 @@ public record ValidationError(
     String errorMsg
 ) {
 
+  @JsonIgnore
+  public boolean isValid() {
+    return !StringUtils.isAllBlank(fieldId, errorMsg);
+  }
 }

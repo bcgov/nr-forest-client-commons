@@ -7,12 +7,24 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Enumeration representing different types of submissions.
+ * <p>
+ * This enum defines various types of submissions identified by unique codes (e.g., SPP, RNC, AAC).
+ * It includes a static block to initialize a map for reverse lookup, allowing retrieval of enum
+ * instances by their name. This feature facilitates the conversion from string values to their
+ * corresponding enum instances, especially useful in parsing data from external sources or user
+ * input.
+ * </p>
+ */
 @Getter
 @AllArgsConstructor
 public enum SubmissionTypeCodeEnum {
   SPP("Submission pending processing"),
   RNC("Review new client"),
-  AAC("Auto approved client");
+  AAC("Auto approved client"),
+  RAC("Review approved client"),
+  SSD("Staff submitted data");
 
   private final String description;
   private static final Map<String, SubmissionTypeCodeEnum>
