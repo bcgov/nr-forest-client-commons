@@ -31,7 +31,6 @@ public enum ClientTypeCodeEnum {
     }
   }
 
-  @JsonValue
   public String value() {
     return this.description;
   }
