@@ -31,10 +31,6 @@ public enum ClientTypeCodeEnum {
     }
   }
 
-  public String value() {
-    return this.description;
-  }
-
   /**
    * Retrieves the enum instance corresponding to the given string value.
    * <p>
