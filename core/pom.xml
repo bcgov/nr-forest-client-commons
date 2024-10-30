@@ -44,13 +44,10 @@
         <sonar.coverage.exclusions>
             **/dto/**,
             **/*$*Builder*,
-            **/LogUtil*
         </sonar.coverage.exclusions>
         <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
 
         <junit-jupiter-api.version>5.10.5</junit-jupiter-api.version>
-        <junit-platform.version>1.9.1</junit-platform.version>
-        <assertj.version>3.24.2</assertj.version>
         <oci.revision>${project.version}</oci.revision>
         <assertj-core.version>3.25.3</assertj-core.version>
     </properties>
