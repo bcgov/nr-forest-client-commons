@@ -15,9 +15,9 @@ LABEL org.opencontainers.image.vendor="Government of British Columbia"
 LABEL org.opencontainers.image.description="Extracts the Oracle Database Client certificates from the Oracle connection and adds them to the Java Truststore."
 LABEL org.opencontainers.image.base.name="eclipse-temurin:17.0.11_9-jdk-alpine"
 
-ENV LANG en_CA.UTF-8
-ENV LANGUAGE en_CA.UTF-8
-ENV LC_ALL en_CA.UTF-8
+ENV LANG=en_CA.UTF-8
+ENV LANGUAGE=en_CA.UTF-8
+ENV LC_ALL=en_CA.UTF-8
 
 WORKDIR /app
 
