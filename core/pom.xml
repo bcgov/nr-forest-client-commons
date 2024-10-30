@@ -47,9 +47,9 @@
         </sonar.coverage.exclusions>
         <sonar.java.checkstyle.reportPaths>target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
 
-        <junit-jupiter-api.version>5.10.5</junit-jupiter-api.version>
+        <junit-jupiter-api.version>5.11.3</junit-jupiter-api.version>
         <oci.revision>${project.version}</oci.revision>
-        <assertj-core.version>3.25.3</assertj-core.version>
+        <assertj-core.version>3.26.3</assertj-core.version>
     </properties>
 
     <dependencies>
@@ -81,7 +81,7 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>3.0.2</version>
+            <version>3.1.0</version>
         </dependency>
 
         <!-- Test Dependencies -->
