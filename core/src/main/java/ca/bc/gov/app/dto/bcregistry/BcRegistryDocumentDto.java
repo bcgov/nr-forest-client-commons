@@ -17,4 +17,15 @@ public record BcRegistryDocumentDto(
     return localParties.stream().anyMatch(BcRegistryPartyDto::isPerson);
   }
 
+  public BcRegistryPartyDto getProprietor() {
+    if (parties == null) {
+      return null;
+    }
+    return parties
+        .stream()
+        .filter(BcRegistryPartyDto::isProprietor)
+        .findFirst()
+        .orElse(null);
+  }
+
 }

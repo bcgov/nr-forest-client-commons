@@ -58,4 +58,14 @@ public record BcRegistryPartyDto(
   public boolean isPerson() {
     return officer != null && officer().isPerson();
   }
+
+  public boolean isProprietor() {
+    if (roles == null) {
+      return false;
+    }
+    return roles
+        .stream()
+        .filter(BcRegistryRoleDto::active)
+        .anyMatch(role -> StringUtils.equalsIgnoreCase(role.roleType(), "Proprietor"));
+  }
 }
