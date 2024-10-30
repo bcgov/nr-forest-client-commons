@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.With;
 import org.apache.commons.lang3.StringUtils;
 
+@With
 public record ForestClientDto(
     String clientNumber,
     String clientName,
