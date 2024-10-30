@@ -48,7 +48,7 @@ jobs:
             -Dsonar.projectKey=bcgov_nr-forest-client-commons
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-            -Dsonar.coverage.exclusions= **/dto/**,**/*$*Builder*,**/LogUtil*
+            -Dsonar.coverage.exclusions= **/dto/**,**/*$*Builder*
           sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
           triggers: ('core/')
 
