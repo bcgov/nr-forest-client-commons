@@ -1,4 +1,4 @@
-name: Reusable Unit Tests and Analysis
+name: .Tests
 
 on:
   workflow_call:
@@ -28,6 +28,7 @@ jobs:
       - run: |
           echo "semver=${{ steps.semver.outputs.version }}"
           echo "tag=${{ steps.semver.outputs.tag }}"
+
   tests-java:
     name: Library Tests
     needs: [vars]
