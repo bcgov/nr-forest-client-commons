@@ -55,8 +55,8 @@ This is an utility for extracting the connection certificate from an Oracle Data
 
 
 ```yml
-- apiVersion: v1
-    kind: DeploymentConfig
+- apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: application-name
@@ -64,14 +64,15 @@ This is an utility for extracting the connection certificate from an Oracle Data
     spec:
       replicas: 1
       selector:
-        deploymentconfig: application-component
+        matchLabels:
+          deployment: application-component
       strategy:
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           labels:
             app: application-name
-            deploymentconfig: application-component
+            deployment: application-component
         spec:
           volumes:
             - name: application-name-certs

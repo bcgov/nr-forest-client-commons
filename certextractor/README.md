@@ -6,7 +6,7 @@ This repository contains a utility for extracting the connection certificate fro
 
 To use the Oracle Database Client Connection Certificate Extractor as part of your openshift deployment, follow these steps:
 
-1. On your DeploymentConfig, add the initContainers (same as an actual container)
+1. On your Deployment, add the initContainers (same as an actual container)
 2a. Set the image as `ghcr.io/bcgov/nr-forest-client-commons/certextractor:X.Y.Z`
 2b. Create a new ImageStream and reference `ghcr.io/bcgov/nr-forest-client-commons/certextractor:X.Y.Z`
 
@@ -29,8 +29,8 @@ This project is licensed under the [Apache 2.0](../LICENSE).
 Keep in mind that this is just an example, adapt it to your requirements.
 
 ```yml
-- apiVersion: v1
-    kind: DeploymentConfig
+- apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: application-name
@@ -38,14 +38,15 @@ Keep in mind that this is just an example, adapt it to your requirements.
     spec:
       replicas: 1
       selector:
-        deploymentconfig: application-component
+        matchLabels:
+          deployment: application-component
       strategy:
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           labels:
             app: application-name
-            deploymentconfig: application-component
+            deployment: application-component
         spec:
           volumes:
             - name: application-name-certs
