@@ -46,11 +46,11 @@ jobs:
           java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
+            -Dsonar.projectKey=bcgov_nr-forest-client-commons-core
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions= **/dto/**,**/*$*Builder*
-          sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+          sonar_token: ${{ secrets.SONAR_CORE }}
           triggers: ('core/')
 
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
@@ -64,11 +64,11 @@ jobs:
           java-version: "17"
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-forest-client-commons
+            -Dsonar.projectKey=bcgov_nr-forest-client-commons-spring
             -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/ApplicationConstant*
-          sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+          sonar_token: ${{ secrets.SONAR_SPRING }}
           triggers: ('spring/')
 
       - name: Archive CycloneDX
