@@ -51,7 +51,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions= **/dto/**,**/*$*Builder*
           sonar_token: ${{ secrets.SONAR_CORE }}
-          triggers: ('core/')
+          # triggers: ('core/')
 
       - uses: bcgov-nr/action-test-and-analyse-java@v1.0.2
         name: Spring Coverage
@@ -69,7 +69,7 @@ jobs:
             -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
             -Dsonar.coverage.exclusions=**/configuration/**,**/exception/**,**/dto/**,**/entity/**,**/models/**,**/repository/**,**/*$*Builder*,**/ApplicationConstant*
           sonar_token: ${{ secrets.SONAR_SPRING }}
-          triggers: ('spring/')
+          # triggers: ('spring/')
 
       - name: Archive CycloneDX
         continue-on-error: true
