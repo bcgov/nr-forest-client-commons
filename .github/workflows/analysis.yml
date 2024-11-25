@@ -40,10 +40,45 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
+  codeql:
+    name: Semantic Code Analysis
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+      packages: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript,java
+
+      # Autobuild failed for Java, so building manually
+      - name: Set up JDK 17 and Caching maven dependencies
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
+          server-id: "github"
+
+      # Java builds
+      - name: Build Core
+        working-directory: core
+        run: mvn clean package install -DskipTests -Dtests.skip=true
+
+      - name: Build Spring        
+        working-directory: spring
+        run: mvn clean package -DskipTests -Dtests.skip=true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
   results:
     name: Analysis Results
-    # needs: [tests-java, trivy] - uncomment when/if Trivy stops failing (upstream problem)
-    needs: [tests-java]
+    # needs: [codeql, tests-java, trivy] - uncomment when/if Trivy stops failing (upstream problem)
+    needs: [codeql, tests-java]
     runs-on: ubuntu-24.04
     steps:
       - run: echo "Workflow completed successfully!"
