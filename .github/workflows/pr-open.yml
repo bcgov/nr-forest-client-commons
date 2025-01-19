@@ -11,7 +11,7 @@ concurrency:
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
