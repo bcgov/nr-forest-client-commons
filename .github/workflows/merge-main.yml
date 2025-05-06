@@ -27,9 +27,9 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov-nr/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@v0.0.1
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v5.4.0
+        uses: TriPSs/conventional-changelog-action@v6.0.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -127,7 +127,7 @@ jobs:
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
-        if: ${{ needs.vars.outputs.tag != '' }}
+        if: needs.vars.outputs.tag != ''
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ github.token }}

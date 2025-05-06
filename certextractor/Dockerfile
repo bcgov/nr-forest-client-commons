@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.13_11-jdk-alpine
+FROM eclipse-temurin:17.0.15_6-jdk-alpine
 
 ARG BUILD_DATE
 ARG VERSION

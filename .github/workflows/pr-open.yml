@@ -11,7 +11,7 @@ concurrency:
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
@@ -21,7 +21,7 @@ jobs:
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v5.4.0
+        uses: TriPSs/conventional-changelog-action@v6.0.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@v2.3.0
         name: Build Cert Extractor
         with:
           package: certextractor
