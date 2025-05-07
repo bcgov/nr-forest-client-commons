@@ -35,7 +35,7 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
     steps:
-      - uses: bcgov/action-test-and-analyse-java@v1.0.2
+      - uses: bcgov/action-test-and-analyse-java@v1.1.0
         name: Core Coverage
         with:
           commands: |
@@ -53,7 +53,7 @@ jobs:
           sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
           triggers: ('core/')
 
-      - uses: bcgov/action-test-and-analyse-java@v1.0.2
+      - uses: bcgov/action-test-and-analyse-java@v1.1.0
         name: Spring Coverage
         with:
           commands: |
