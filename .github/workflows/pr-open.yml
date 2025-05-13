@@ -17,11 +17,11 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v6.0.0
+        uses: TriPSs/conventional-changelog-action@67139193614f5b9e8db87da1bd4240922b34d765 # v6.0.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -42,10 +42,10 @@ jobs:
       contents: read
       pull-requests: write    
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       
       - name: Removing old core
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}
@@ -55,7 +55,7 @@ jobs:
           user: ${{ github.repository_owner }}
 
       - name: Removing old spring
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}
@@ -69,9 +69,9 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [vars, pr-validation]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - uses: bcgov/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@ace71f7a527ca6fc43c15c7806314be5a4579d2c # v2.3.0
         name: Build Cert Extractor
         with:
           package: certextractor
@@ -90,10 +90,10 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Publish Core
-        uses: paulushcgcj/action-java-publish@v0.1.1
+        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
         with:
           dir: core
           app-version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
@@ -110,10 +110,10 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Publish Spring
-        uses: paulushcgcj/action-java-publish@v0.1.1
+        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
         with:          
           dir: spring
           app-version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}

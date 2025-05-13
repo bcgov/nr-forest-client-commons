@@ -18,11 +18,11 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v6.0.0
+        uses: TriPSs/conventional-changelog-action@67139193614f5b9e8db87da1bd4240922b34d765 # v6.0.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -42,11 +42,11 @@ jobs:
       NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Conventional Changelog Update
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@v6
+        uses: TriPSs/conventional-changelog-action@67139193614f5b9e8db87da1bd4240922b34d765 # v6
         id: changelog
         with:
           github-token: ${{ github.token }}
@@ -57,7 +57,7 @@ jobs:
           skip-on-empty: "false"
 
       - name: Removing dev core
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}
@@ -67,7 +67,7 @@ jobs:
           user: ${{ github.repository_owner }}
 
       - name: Removing dev spring
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}

@@ -27,9 +27,9 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@v0.0.1
+        uses: bcgov/action-get-pr@21f9351425cd55a98e869ee28919a512aa30647d # v0.0.1
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@v6.0.0
+        uses: TriPSs/conventional-changelog-action@67139193614f5b9e8db87da1bd4240922b34d765 # v6.0.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -43,7 +43,7 @@ jobs:
     needs: [vars]
     runs-on: ubuntu-24.04    
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/certextractor
@@ -57,10 +57,10 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Removing old core
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}
@@ -70,7 +70,7 @@ jobs:
           user: ${{ github.repository_owner }}
 
       - name: Publish Core
-        uses: paulushcgcj/action-java-publish@v0.1.1
+        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
         with:
           dir: core
           app-version: ${{ needs.vars.outputs.semver }}
@@ -87,10 +87,10 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Removing old spring
-        uses: paulushcgcj/delete-github-package@1.0.0
+        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
         continue-on-error: true
         with:
           token: ${{ secrets.PAT }}
@@ -100,7 +100,7 @@ jobs:
           user: ${{ github.repository_owner }}
 
       - name: Publish Spring
-        uses: paulushcgcj/action-java-publish@v0.1.1
+        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
         with:          
           dir: spring
           app-version: ${{ needs.vars.outputs.semver }}
@@ -115,10 +115,10 @@ jobs:
     needs: [vars,certextractor,release-core,release-spring]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
         with:
           java-version: "17"
           distribution: "temurin"
@@ -126,7 +126,7 @@ jobs:
           server-id: "github"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2
         if: needs.vars.outputs.tag != ''
         continue-on-error: true
         env:
@@ -173,7 +173,7 @@ jobs:
             type: 'container'
             package: 'certextractor'
     steps:
-      - uses: actions/delete-package-versions@v5
+      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
         with:
           package-name: ${{ matrix.package }}
           package-type: ${{ matrix.type }}
