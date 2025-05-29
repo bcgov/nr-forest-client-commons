@@ -75,7 +75,7 @@ jobs:
         name: Build Cert Extractor
         with:
           package: certextractor
-          tag: ${{needs.vars.outputs.semver}}.PR${{ github.event.number }}
+          tags: ${{needs.vars.outputs.semver}}.PR${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: "certextractor/"
