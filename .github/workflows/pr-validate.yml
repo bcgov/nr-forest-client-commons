@@ -17,7 +17,7 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@v5
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
@@ -67,17 +67,17 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@v5
 
       - name: Checkout branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v5
         with:
           ref: refs/heads/${{ github.head_ref }}
 
       - name: Conventional Changelog Update
         id: changelog
         continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@5f00b899ccbbcbc112bd6d715d5e76e7a9e4501d # v6
+        uses: TriPSs/conventional-changelog-action@67139193614f5b9e8db87da1bd4240922b34d765 # v6
         with:
           github-token: ${{ github.token }}
           output-file: "CHANGELOG.md"
@@ -87,7 +87,7 @@ jobs:
           git-branch: refs/heads/${{ github.head_ref }}
 
       - name: Checkout pr
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.ref }}
 
