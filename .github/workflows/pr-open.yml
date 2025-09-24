@@ -17,7 +17,7 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
@@ -42,7 +42,7 @@ jobs:
       contents: read
       pull-requests: write    
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       
       - name: Removing old core
         uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [vars, pr-validation]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - uses: bcgov/action-builder-ghcr@1a3767a04ade69edf7e4857c44269d1100282581 # v4.1.0
         name: Build Cert Extractor
@@ -90,7 +90,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - name: Publish Core
         uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
@@ -110,7 +110,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - name: Publish Spring
         uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
