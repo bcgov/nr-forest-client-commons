@@ -33,15 +33,15 @@ jobs:
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
-          git-push: 'false'
-          skip-commit: 'true'
-          skip-on-empty: 'false'
-          skip-version-file: 'true'
+          git-push: "false"
+          skip-commit: "true"
+          skip-on-empty: "false"
+          skip-version-file: "true"
 
   certextractor:
     name: Promote certextractor
     needs: [vars]
-    runs-on: ubuntu-24.04    
+    runs-on: ubuntu-24.04
     steps:
       - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
@@ -57,7 +57,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@v5
 
       - name: Removing old core
         uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
@@ -87,7 +87,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@v5
 
       - name: Removing old spring
         uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
@@ -101,7 +101,7 @@ jobs:
 
       - name: Publish Spring
         uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
-        with:          
+        with:
           dir: spring
           app-version: ${{ needs.vars.outputs.semver }}
           extra-params: -DskipTests -Dtests.skip=true -Dcore.version=${{ needs.vars.outputs.semver }}
@@ -112,13 +112,13 @@ jobs:
 
   tagging:
     name: Tagging library
-    needs: [vars,certextractor,release-core,release-spring]
+    needs: [vars, certextractor, release-core, release-spring]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@v5
 
       - name: Setup JDK 17
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
+        uses: actions/setup-java@v5
         with:
           java-version: "17"
           distribution: "temurin"
@@ -154,26 +154,25 @@ jobs:
             </dependency>
             ```
 
-
   cleanup:
     name: Dependency cleanup
     needs: [tagging]
     runs-on: ununtu-24.04
     strategy:
       matrix:
-        name: [core,spring,certextract]
+        name: [core, spring, certextract]
         include:
           - name: core
-            type: 'maven'
-            package: 'ca.bc.gov.nrs-commons.forest-client-core'
+            type: "maven"
+            package: "ca.bc.gov.nrs-commons.forest-client-core"
           - name: spring
-            type: 'maven'
-            package: 'ca.bc.gov.nrs-commons.forest-client-spring'
+            type: "maven"
+            package: "ca.bc.gov.nrs-commons.forest-client-spring"
           - name: certextract
-            type: 'container'
-            package: 'certextractor'
+            type: "container"
+            package: "certextractor"
     steps:
-      - uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5
+      - uses: actions/delete-package-versions@v5
         with:
           package-name: ${{ matrix.package }}
           package-type: ${{ matrix.type }}
