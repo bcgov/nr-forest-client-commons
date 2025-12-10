@@ -17,7 +17,7 @@ permissions: {}
 
 jobs:
   tests-java:
-    name: Backend Tests
+    name: Core Library Tests
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     uses: ./.github/workflows/.tests.yml
 
