@@ -14,11 +14,11 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@5f00b899ccbbcbc112bd6d715d5e76e7a9e4501d # v6.1.0
+        uses: TriPSs/conventional-changelog-action@84dadaf2c367cb52af02737cd9c7e888807219e7 # v6.2.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Archive CycloneDX
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: cyclone-backend
           path: |
@@ -73,7 +73,7 @@ jobs:
           path: core/**/checkstyle-result.xml
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@3585e9575db828022551b4231f165eb59a0e74e3 # v5
+        uses: mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6 # v6
         continue-on-error: true
         if: github.event_name == 'pull_request' && (success() || failure())
         with:
