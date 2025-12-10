@@ -70,12 +70,3 @@ jobs:
           version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
 
-      - name: Removing dev spring
-        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT }}
-          type: maven
-          name: ca.bc.gov.nrs-commons.forest-client-spring
-          version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
-          user: ${{ github.repository_owner }}

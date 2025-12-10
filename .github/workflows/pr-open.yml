@@ -56,16 +56,6 @@ jobs:
           version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
           user: ${{ github.repository_owner }}
 
-      - name: Removing old spring
-        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT }}
-          type: maven
-          name: ca.bc.gov.nrs-commons.forest-client-spring
-          version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
-          user: ${{ github.repository_owner }}
-
   build-certextractor:
     name: Builds Cert Extractor
     runs-on: ubuntu-24.04
@@ -107,22 +97,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-  build-spring:
-    name: Build Spring
-    runs-on: ubuntu-24.04
-    needs: [vars, build-core]
-    permissions:
-      packages: write
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Publish Spring
-        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
-        with:
-          dir: spring
-          app-version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
-          extra-params: -DskipTests -Dtests.skip=true -Dcore.version=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
-          add-sources: true
-          add-javadoc: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}

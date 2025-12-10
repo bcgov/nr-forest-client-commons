@@ -18,7 +18,7 @@ To use this repository, you need to include it as a Maven repository in your pro
 </repository>
 ```
 
-Next, you will need to include one of the two dependencies from this repository in your project. Add the following code snippets inside the `<dependencies>` section of your `pom.xml` file. Make sure to replace `X.Y.Z` with the appropriate version number.
+Next, you will need to include the dependency from this repository in your project. Add the following code snippet inside the `<dependencies>` section of your `pom.xml` file. Make sure to replace `X.Y.Z` with the appropriate version number.
 
 By including the repository and dependencies as mentioned, you will be able to utilize the common code shared between all forest client applications and the API. This repository provides essential functionality and utilities that can be leveraged to enhance your forest client projects. Ensure that you have the necessary access and permissions to the repository in order to successfully include it in your project.
 
@@ -35,19 +35,6 @@ The core library contains DTOs and utility classes that are framework independen
   <version>X.Y.Z</version>
 </dependency>
 ```
-
-## Spring library
-
-The spring library implements the core library and make use of the spring framework, more specifically the spring boot framework. If you want to reuse some of the spring code that is generic. In case you want to use this, you can skip the core one, as it will be included as well.
-
-```xml
-<dependency>
-  <groupId>ca.bc.gov.nrs-commons</groupId>
-  <artifactId>forest-client-spring</artifactId>
-  <version>X.Y.Z</version>
-</dependency>
-```
-
 
 ## Oracle Database Client Connection Certificate Extractor
 

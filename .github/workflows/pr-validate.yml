@@ -42,19 +42,11 @@ jobs:
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@d9b3d32fb3f03c4699c2dce83ddfff042cd31a1f # v1.0.0
     with:
       markdown_links: |
-        Any successful releases will be available as the following dependencyes:
+        Any successful releases will be available as the following dependency:
         ```
           <dependency>
             <groupId>ca.bc.gov.nrs-commons</groupId>
             <artifactId>forest-client-core</artifactId>
-            <version>${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}</version>
-          </dependency>
-          ```
-
-          ```
-          <dependency>
-            <groupId>ca.bc.gov.nrs-commons</groupId>
-            <artifactId>forest-client-spring</artifactId>
             <version>${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}</version>
           </dependency>
           ```
