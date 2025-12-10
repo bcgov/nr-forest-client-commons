@@ -9,6 +9,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   vars:
     name: Variables
@@ -38,6 +40,8 @@ jobs:
     name: Cleanup Dev Images
     runs-on: ubuntu-24.04
     needs: [vars]
+    permissions:
+      packages: write
     env:
       NAME: ${{ github.event.repository.name }}
     steps:

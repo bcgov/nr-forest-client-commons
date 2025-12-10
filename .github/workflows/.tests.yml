@@ -3,6 +3,8 @@ name: .Tests
 on:
   workflow_call:
 
+permissions: {}
+
 jobs:
   vars:
     name: Variables
@@ -34,6 +36,8 @@ jobs:
     needs: [vars]
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: write
     steps:
       - uses: bcgov/action-test-and-analyse-java@7c7309721cae054b3e837c723afa4efb4b1a256d # v1.1.0
         name: Core Coverage

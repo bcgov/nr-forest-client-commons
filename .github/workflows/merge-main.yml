@@ -13,6 +13,8 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   vars:
     name: Set Variables
@@ -42,6 +44,8 @@ jobs:
     name: Promote certextractor
     needs: [vars]
     runs-on: ubuntu-24.04
+    permissions:
+      packages: write
     steps:
       - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa # v4
         with:
@@ -114,6 +118,8 @@ jobs:
     name: Tagging library
     needs: [vars, certextractor, release-core, release-spring]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
 
@@ -158,6 +164,8 @@ jobs:
     name: Dependency cleanup
     needs: [tagging]
     runs-on: ununtu-24.04
+    permissions:
+      packages: write
     strategy:
       matrix:
         name: [core, spring, certextract]

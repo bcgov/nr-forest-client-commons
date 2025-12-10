@@ -13,6 +13,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   tests-java:
     name: Backend Tests
@@ -23,6 +25,8 @@ jobs:
     name: Repository Report
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
+    permissions:
+      security-events: write
     steps:
       - uses: actions/checkout@v6
       - name: Run Trivy vulnerability scanner in repo mode
