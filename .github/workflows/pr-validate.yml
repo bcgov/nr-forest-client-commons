@@ -39,17 +39,13 @@ jobs:
   validate:
     name: Validate PR
     needs: [vars]
+    permissions:
+      pull-requests: write
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@d9b3d32fb3f03c4699c2dce83ddfff042cd31a1f # v1.0.0
     with:
       markdown_links: |
-        Any successful releases will be available as the following dependency:
-        ```
-          <dependency>
-            <groupId>ca.bc.gov.nrs-commons</groupId>
-            <artifactId>forest-client-core</artifactId>
-            <version>${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}</version>
-          </dependency>
-          ```
+        Any successful releases will be available as the Cert Extractor image:
+        `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}`
 
           Once merged, the code will be promoted and handed off to the following workflow run.
           [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
