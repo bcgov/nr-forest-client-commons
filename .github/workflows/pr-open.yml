@@ -8,6 +8,8 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   vars:
     name: Variables
@@ -68,6 +70,8 @@ jobs:
     name: Builds Cert Extractor
     runs-on: ubuntu-24.04
     needs: [vars, pr-validation]
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v5
 
