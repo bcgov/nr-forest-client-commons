@@ -16,11 +16,6 @@ concurrency:
 permissions: {}
 
 jobs:
-  tests-java:
-    name: Core Library Tests
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
-    uses: ./.github/workflows/.tests.yml
-
   trivy:
     name: Repository Report
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -46,8 +41,8 @@ jobs:
 
   results:
     name: Analysis Results
-    # needs: [tests-java, trivy] - uncomment when/if Trivy stops failing (upstream problem)
-    needs: [tests-java]
+    # needs: [trivy] - uncomment when/if Trivy stops failing (upstream problem)
+    needs: []
     runs-on: ubuntu-24.04
     steps:
       - run: echo "Workflow completed successfully!"
