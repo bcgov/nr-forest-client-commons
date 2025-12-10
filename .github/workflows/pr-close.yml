@@ -18,7 +18,7 @@ jobs:
       tag: ${{ steps.semver.outputs.tag }}
     steps:
       # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: refs/heads/${{ github.event.repository.default_branch }}
       - name: Conventional Changelog Update
@@ -42,7 +42,7 @@ jobs:
       NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Conventional Changelog Update
         continue-on-error: true
