@@ -54,52 +54,14 @@ jobs:
           target: ${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
           tags: ${{ needs.vars.outputs.semver }}
 
-  release-core:
-    name: Build Core
-    runs-on: ubuntu-24.04
-    needs: [vars]
-    permissions:
-      packages: write
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Removing old core
-        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT }}
-          type: maven
-          name: ca.bc.gov.nrs-commons.forest-client-core
-          version: ${{ needs.vars.outputs.semver }}
-          user: ${{ github.repository_owner }}
-
-      - name: Publish Core
-        uses: paulushcgcj/action-java-publish@0fea81574890a3e7752153f2956f838fb662d680 # v0.1.1
-        with:
-          dir: core
-          app-version: ${{ needs.vars.outputs.semver }}
-          extra-params: -DskipTests -Dtests.skip=true
-          add-sources: true
-          add-javadoc: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
   tagging:
     name: Tagging library
-    needs: [vars, certextractor, release-core]
+    needs: [vars, certextractor]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v5
-        with:
-          java-version: "17"
-          distribution: "temurin"
-          cache: "maven"
-          server-id: "github"
 
       - name: Create Release
         uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2
@@ -114,13 +76,8 @@ jobs:
           body: |
             ${{ needs.vars.outputs.clean_changelog }}
 
-            ```
-            <dependency>
-              <groupId>ca.bc.gov.nrs-commons</groupId>
-              <artifactId>forest-client-core</artifactId>
-              <version>${{ needs.vars.outputs.semver }}</version>
-            </dependency>
-            ```
+            The Cert Extractor image is available at:
+            `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}`
 
   cleanup:
     name: Dependency cleanup
@@ -130,11 +87,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        name: [core, certextract]
+        name: [certextract]
         include:
-          - name: core
-            type: "maven"
-            package: "ca.bc.gov.nrs-commons.forest-client-core"
           - name: certextract
             type: "container"
             package: "certextractor"

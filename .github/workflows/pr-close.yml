@@ -36,37 +36,5 @@ jobs:
       - run: |
           echo "semver=${{ steps.semver.outputs.version }}"
           echo "tag=${{ steps.semver.outputs.tag }}"
-  cleanup-jars:
-    name: Cleanup Dev Images
-    runs-on: ubuntu-24.04
-    needs: [vars]
-    permissions:
-      packages: write
-    env:
-      NAME: ${{ github.event.repository.name }}
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v5
 
-      - name: Conventional Changelog Update
-        continue-on-error: true
-        uses: TriPSs/conventional-changelog-action@5f00b899ccbbcbc112bd6d715d5e76e7a9e4501d # v6
-        id: changelog
-        with:
-          github-token: ${{ github.token }}
-          output-file: "CHANGELOG.md"
-          skip-version-file: "true"
-          skip-commit: "true"
-          git-push: "false"
-          skip-on-empty: "false"
-
-      - name: Removing dev core
-        uses: paulushcgcj/delete-github-package@c4ecb4c7b65e8eabc137389cd9b0096c7ee3963b # 1.0.0
-        continue-on-error: true
-        with:
-          token: ${{ secrets.PAT }}
-          type: maven
-          name: ca.bc.gov.nrs-commons.forest-client-core
-          version: ${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
-          user: ${{ github.repository_owner }}
 
