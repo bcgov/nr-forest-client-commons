@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.17_10-jdk-alpine@sha256:eaf56b7430cee6c93871106367715e2675192093d8f67dbbdbe07136f7cfae60
+FROM eclipse-temurin:25.0.1_8-jdk-alpine@sha256:0c4c6300cc86efdf6454702336a0d60352e227f3a862e8ae9861f393f8f1ede9
 
 ARG BUILD_DATE
 ARG VERSION
