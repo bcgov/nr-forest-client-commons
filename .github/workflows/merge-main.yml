@@ -29,7 +29,7 @@ jobs:
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
-        uses: bcgov/action-get-pr@35514fa1d4765547da319e967b509363598e8b46 # v0.1.0
+        uses: bcgov/action-get-pr@bfa713a9ab410c0f0c13126c35983934fc80d15b # v0.1.1
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@84dadaf2c367cb52af02737cd9c7e888807219e7 # v6.2.0
         id: semver
