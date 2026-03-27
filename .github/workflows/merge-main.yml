@@ -31,7 +31,7 @@ jobs:
         id: pr
         uses: bcgov/action-get-pr@bfa713a9ab410c0f0c13126c35983934fc80d15b # v0.1.1
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@84dadaf2c367cb52af02737cd9c7e888807219e7 # v6.2.0
+        uses: TriPSs/conventional-changelog-action@91be4f3188da74fe85de9caffcebc80b26d43b5b # v6.3.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
