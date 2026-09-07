@@ -31,7 +31,7 @@ jobs:
         id: pr
         uses: bcgov/action-get-pr@28b0adf8e4d40720d41f9c87356ce24b0a4bd6af # v0.3.1
       - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@ee43def3241429afddab215ba89090cbf64fb45c # v6.4.0
+        uses: TriPSs/conventional-changelog-action@469f0e5e35831fbd1962706f29f65daf0a5723f2 # v6.5.0
         id: semver
         with:
           git-branch: refs/heads/${{ github.head_ref }}
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Create Release
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
         if: needs.vars.outputs.tag != ''
         continue-on-error: true
         env:
