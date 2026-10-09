@@ -43,11 +43,14 @@ jobs:
     needs: [vars]
     permissions:
       packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v7
 
       - uses: bcgov/action-builder-ghcr@cb2629351c87dd1c2130073e4ebb7233a9653a63 # v4.4.1
         name: Build Cert Extractor
+        id: build
         with:
           package: certextractor
           tags: ${{needs.vars.outputs.semver}}.PR${{ github.event.number }}
@@ -57,3 +60,46 @@ jobs:
           build_args: |
             BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
             VERSION=${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}
+
+  smoke-certextractor:
+    name: Cert Extractor Smoke Test
+    runs-on: ubuntu-24.04
+    needs: [build-certextractor]
+    timeout-minutes: 5
+    permissions:
+      packages: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: echo "${GH_TOKEN}" | docker login ghcr.io -u "${ACTOR}" --password-stdin
+
+      - name: Smoke test the built image
+        env:
+          DIGEST: ${{ needs.build-certextractor.outputs.digest }}
+        run: |
+          [ -n "${DIGEST}" ] || { echo "No image digest from the build job"; exit 1; }
+          ./certextractor/smoke-test.sh "ghcr.io/${GITHUB_REPOSITORY,,}/certextractor@${DIGEST}"
+
+  results:
+    name: PR Results
+    needs: [vars, build-certextractor, smoke-certextractor]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Log job results
+        run: |
+          echo '${{ toJson(needs) }}'
+
+      # Skipped counts as failed: every job above must run and succeed
+      - name: Fail unless every job succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "At least one job failed, was cancelled or was skipped."
+          exit 1
+
+      - run: echo "All jobs succeeded."

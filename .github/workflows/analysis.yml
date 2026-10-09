@@ -18,7 +18,6 @@ permissions: {}
 jobs:
   trivy:
     name: Repository Report
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
     permissions:
       security-events: write
@@ -39,10 +38,32 @@ jobs:
         with:
           sarif_file: "trivy-results.sarif"
 
+  tests:
+    name: Tests
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
+    uses: ./.github/workflows/.tests.yml
+    secrets:
+      sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
+
   results:
     name: Analysis Results
-    # needs: [trivy] - uncomment when/if Trivy stops failing (upstream problem)
-    needs: []
+    needs: [trivy, tests]
+    if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 1
     steps:
-      - run: echo "Workflow completed successfully!"
+      - name: Log job results
+        run: |
+          echo '${{ toJson(needs) }}'
+
+      # Skipped counts as failed: every job above must run and succeed
+      - name: Fail unless every job succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "At least one job failed, was cancelled or was skipped."
+          exit 1
+
+      - run: echo "All jobs succeeded."

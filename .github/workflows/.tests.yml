@@ -2,45 +2,25 @@ name: .Tests
 
 on:
   workflow_call:
+    secrets:
+      sonar_token:
+        description: SonarCloud token; analysis is skipped when empty
+        required: false
 
 permissions: {}
 
 jobs:
-  vars:
-    name: Variables
-    runs-on: ubuntu-24.04
-    outputs:
-      semver: ${{ steps.semver.outputs.version }}
-      tag: ${{ steps.semver.outputs.tag }}
-    steps:
-      # steps.semver.outputs.tag => needs.vars.outputs.semver
-      - uses: actions/checkout@v7
-        with:
-          ref: refs/heads/${{ github.event.repository.default_branch }}
-      - name: Conventional Changelog Update
-        uses: TriPSs/conventional-changelog-action@469f0e5e35831fbd1962706f29f65daf0a5723f2 # v6.5.0
-        id: semver
-        with:
-          git-branch: refs/heads/${{ github.head_ref }}
-          git-push: "false"
-          skip-commit: "true"
-          skip-on-empty: "false"
-          skip-version-file: "true"
-
-      - run: |
-          echo "semver=${{ steps.semver.outputs.version }}"
-          echo "tag=${{ steps.semver.outputs.tag }}"
-
   tests-java:
     name: Library Tests
-    needs: [vars]
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     permissions:
+      checks: write
+      contents: read
       pull-requests: write
     steps:
-      - uses: bcgov/action-test-and-analyse-java@7c7309721cae054b3e837c723afa4efb4b1a256d # v1.1.0
-        name: Core Coverage
+      - uses: bcgov/action-test-and-analyse-java@a8e35510683d3d916e4366a44b2d5cb61d0f23fe # v.1.2.0
+        name: Core Tests
         with:
           commands: |
             mvn -B verify -P all-tests checkstyle:checkstyle -Dcheckstyle.skip=false --file pom.xml
@@ -51,11 +31,7 @@ jobs:
           sonar_args: >
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.projectKey=bcgov_nr-forest-client-commons
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/coverage-reports/merged-test-report/jacoco.xml        
-            -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
-            -Dsonar.coverage.exclusions= **/dto/**,**/*$*Builder*
-          sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
-          triggers: ('core/')
+          sonar_token: ${{ secrets.sonar_token }}
 
       - name: Archive CycloneDX
         continue-on-error: true
@@ -65,12 +41,6 @@ jobs:
           path: |
             core/target/bom.json
           retention-days: 5
-
-      - name: Checkstyle report
-        continue-on-error: true
-        uses: jwgmeligmeyling/checkstyle-github-action@master
-        with:
-          path: core/**/checkstyle-result.xml
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6
