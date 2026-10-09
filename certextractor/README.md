@@ -10,6 +10,15 @@ To use the Oracle Database Client Connection Certificate Extractor as part of yo
 2a. Set the image as `ghcr.io/bcgov/nr-forest-client-commons/certextractor:X.Y.Z`
 2b. Create a new ImageStream and reference `ghcr.io/bcgov/nr-forest-client-commons/certextractor:X.Y.Z`
 
+## Testing
+
+`smoke-test.sh` runs an image against a throwaway local TLS server and checks that the server certificate ends up in `/cert/jssecacerts`. It also checks that port 1521 is skipped and that an existing keystore is kept. Pull request CI runs it against the image it just built.
+
+```sh
+docker build -t certextractor:local certextractor
+certextractor/smoke-test.sh certextractor:local
+```
+
 ## Contributing
 
 Contributions are welcome! If you would like to contribute to the Oracle Database Client Connection Certificate Extractor, please follow these guidelines:
