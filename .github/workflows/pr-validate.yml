@@ -6,7 +6,8 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-edit-${{ github.event.number }}
-  cancel-in-progress: true
+  # Queue rather than cancel: a cancelled run would leave a failed results check on the same commit
+  cancel-in-progress: false
 
 permissions: {}
 
