@@ -26,6 +26,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
+      - uses: actions/checkout@v7
+
       # Get PR number for squash merges to main
       - name: PR Number
         id: pr
@@ -78,23 +80,3 @@ jobs:
 
             The Cert Extractor image is available at:
             `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}`
-
-  cleanup:
-    name: Dependency cleanup
-    needs: [tagging]
-    runs-on: ununtu-24.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        name: [certextract]
-        include:
-          - name: certextract
-            type: "container"
-            package: "certextractor"
-    steps:
-      - uses: actions/delete-package-versions@v5
-        with:
-          package-name: ${{ matrix.package }}
-          package-type: ${{ matrix.type }}
-          min-versions-to-keep: 2
