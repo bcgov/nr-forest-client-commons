@@ -45,8 +45,6 @@ jobs:
       contents: read
       pull-requests: write
     uses: ./.github/workflows/.tests.yml
-    secrets:
-      sonar_token: ${{ secrets.SONAR_TOKEN_COMMONS }}
 
   results:
     name: Analysis Results
