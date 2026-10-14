@@ -6,7 +6,8 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-edit-${{ github.event.number }}
-  cancel-in-progress: true
+  # Queue rather than cancel: a cancelled run would leave a failed results check on the same commit
+  cancel-in-progress: false
 
 permissions: {}
 
@@ -40,15 +41,18 @@ jobs:
     name: Validate PR
     needs: [vars]
     permissions:
+      contents: read
       pull-requests: write
-    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@a11ad3d1b9288fb40757c4314a62eb86ff227931 # v1.2.1
-    with:
-      markdown_links: |
-        Any successful releases will be available as the Cert Extractor image:
-        `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}`
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: bcgov/actions/pr-validate@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
+        with:
+          add_markdown: |
+            Any successful releases will be available as the Cert Extractor image:
+            `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}`
 
-          Once merged, the code will be promoted and handed off to the following workflow run.
-          [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+              Once merged, the code will be promoted and handed off to the following workflow run.
+              [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   changelog:
     name: Pull Request Validation
@@ -95,7 +99,20 @@ jobs:
 
   results:
     name: Validate Results
-    needs: [changelog, validate]
+    needs: [vars, validate, changelog]
+    if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 1
     steps:
-      - run: echo "Workflow completed successfully!"
+      - name: Log job results
+        run: |
+          echo '${{ toJson(needs) }}'
+
+      # Skipped counts as failed: every job above must run and succeed
+      - name: Fail unless every job succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "At least one job failed, was cancelled or was skipped."
+          exit 1
+
+      - run: echo "All jobs succeeded."

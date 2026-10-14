@@ -11,19 +11,21 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Queue rather than cancel: a cancelled run would leave a failed results check on the same commit
+  cancel-in-progress: false
 
 permissions: {}
 
 jobs:
   trivy:
     name: Repository Report
-    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-24.04
     permissions:
       security-events: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || '' }}
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -34,15 +36,36 @@ jobs:
           scanners: "vuln,secret,config"
           severity: "CRITICAL,HIGH"
 
+      - name: Upload Trivy scan results to GitHub Security tab (PR)
+        if: always() && github.event_name == 'pull_request'
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-results.sarif"
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          sha: ${{ github.event.pull_request.head.sha }}
+
       - name: Upload Trivy scan results to GitHub Security tab
+        if: always() && github.event_name != 'pull_request'
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results.sarif"
 
   results:
     name: Analysis Results
-    # needs: [trivy] - uncomment when/if Trivy stops failing (upstream problem)
-    needs: []
+    needs: [trivy]
+    if: always()
     runs-on: ubuntu-24.04
+    timeout-minutes: 1
     steps:
-      - run: echo "Workflow completed successfully!"
+      - name: Log job results
+        run: |
+          echo '${{ toJson(needs) }}'
+
+      # Skipped counts as failed: every job above must run and succeed
+      - name: Fail unless every job succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: |
+          echo "At least one job failed, was cancelled or was skipped."
+          exit 1
+
+      - run: echo "All jobs succeeded."
