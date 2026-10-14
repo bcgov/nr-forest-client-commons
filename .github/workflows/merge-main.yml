@@ -19,6 +19,7 @@ jobs:
   vars:
     name: Set Variables
     outputs:
+      digest: ${{ steps.pr.outputs.digest }}
       pr: ${{ steps.pr.outputs.pr }}
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
@@ -32,7 +33,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      # Get PR number for squash merges to main from the last built image
+      # Resolve the last built certextractor image (digest and PR) for main
       - name: PR Number
         id: pr
         uses: bcgov/actions/image-tracker@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
@@ -60,7 +61,8 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/certextractor
-          target: ${{ needs.vars.outputs.semver }}.PR${{ needs.vars.outputs.pr}}
+          # Promote by digest: the PR tag carries the semver from build time, which goes stale
+          target: ${{ needs.vars.outputs.digest }}
           tags: ${{ needs.vars.outputs.semver }}
 
   tagging:
