@@ -104,15 +104,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
-      - name: Log job results
-        run: |
-          echo '${{ toJson(needs) }}'
-
-      # Skipped counts as failed: every job above must run and succeed
-      - name: Fail unless every job succeeded
-        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
-        run: |
-          echo "At least one job failed, was cancelled or was skipped."
-          exit 1
-
-      - run: echo "All jobs succeeded."
+      - uses: bcgov/actions/workflow-results@79aefe3a7abb2d0d00b1b3ea4cfbf12727a10638 # v0.9.0
+        with:
+          needs: ${{ toJson(needs) }}
+          title: "Validate Results"
