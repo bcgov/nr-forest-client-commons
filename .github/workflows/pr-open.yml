@@ -13,7 +13,7 @@ permissions: {}
 jobs:
   vars:
     name: Variables
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
@@ -39,7 +39,7 @@ jobs:
 
   build-certextractor:
     name: Builds Cert Extractor
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [vars]
     permissions:
       packages: write
@@ -63,7 +63,7 @@ jobs:
 
   smoke-certextractor:
     name: Cert Extractor Smoke Test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [build-certextractor]
     timeout-minutes: 5
     permissions:
@@ -88,7 +88,7 @@ jobs:
     name: PR Results
     needs: [vars, build-certextractor, smoke-certextractor]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       - uses: bcgov/actions/workflow-results@122a9b1c6c082b1b1f18c300020fbdc417b6b0b2 # v0.10.0

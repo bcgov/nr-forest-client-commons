@@ -19,7 +19,7 @@ permissions: {}
 jobs:
   trivy:
     name: Repository Report
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       security-events: write
     steps:
@@ -54,7 +54,7 @@ jobs:
   # Catches broken workflows on the PR, including those that only run after merge or on a schedule
   workflow-lint:
     name: Workflow Lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -68,7 +68,7 @@ jobs:
     name: Analysis Results
     needs: [trivy, workflow-lint]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 1
     steps:
       - uses: bcgov/actions/workflow-results@122a9b1c6c082b1b1f18c300020fbdc417b6b0b2 # v0.10.0
