@@ -24,7 +24,7 @@ jobs:
       semver: ${{ steps.semver.outputs.version }}
       tag: ${{ steps.semver.outputs.tag }}
       clean_changelog: ${{ steps.semver.outputs.clean_changelog }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     permissions:
       contents: read
@@ -53,7 +53,7 @@ jobs:
   certextractor:
     name: Promote certextractor
     needs: [vars]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       packages: write
     steps:
@@ -68,7 +68,7 @@ jobs:
   tagging:
     name: Tagging library
     needs: [vars, certextractor]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:
