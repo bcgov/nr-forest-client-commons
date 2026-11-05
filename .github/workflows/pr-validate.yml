@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: bcgov/actions/pr-validate@d209bb08aabe15e5e69aca53b24d338a7b2843d5 # v0.12.0
         with:
-          add_markdown: |
+          markdown: |
             Any successful releases will be available as the Cert Extractor image:
             `ghcr.io/${{ github.repository }}/certextractor:${{ needs.vars.outputs.semver }}.PR${{ github.event.number }}`
 
