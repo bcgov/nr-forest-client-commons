@@ -39,7 +39,6 @@ jobs:
         uses: bcgov/actions/image-tracker@6c8ac0469fcf0d826533bc526c90119b8f149884 # v0.13.0
         with:
           packages: certextractor
-          max_depth: 100
       - name: Conventional Changelog Update
         uses: TriPSs/conventional-changelog-action@469f0e5e35831fbd1962706f29f65daf0a5723f2 # v6.5.0
         id: semver
